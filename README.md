@@ -1,51 +1,13 @@
-# First Level Heading
+# juego basado en el capitulo 5 de dragonBall
 
-Paragraph.
+Este proyecto es del desafio final de informatica 2, desarrollado en el framework de QT y en el 
+lenguaje de programación de c++, usando la interfaz grafica de QT y las clases que ya vienen 
+predefinidas en el framework. Este proyecto está basado en el capitulo 5 de la serie DragolBall
 
-## Second Level Heading
 
-Paragraph.
 
-- bullet
-+ other bullet
-* another bullet
-    * child bullet
+## sinapsis del capitulo
 
-1. ordered
-2. next ordered
-
-### Third Level Heading
-
-Some *italic* and **bold** text and `inline code`.
-
-An empty line starts a new paragraph.
-
-Use two spaces at the end  
-to force a line break.
-
-A horizontal ruler follows:
-
----
-
-Add links inline like [this link to the Qt homepage](https://www.qt.io),
-or with a reference like [this other link to the Qt homepage][1].
-
-    Add code blocks with
-    four spaces at the front.
-
-> A blockquote
-> starts with >
->
-> and has the same paragraph rules as normal text.
-
-First Level Heading in Alternate Style
-======================================
-
-Paragraph.
-
-Second Level Heading in Alternate Style
----------------------------------------
-
-Paragraph.
+Mientras cruzan el Desierto de Diablo, Goku, Bulma y Oolong son emboscados por Yamcha, un bandido del desierto, y su compañero metamorfo, Puar. Se desata una feroz batalla, pero el miedo de Yamcha a las mujeres cambia inesperadamente el curso de la batalla.
 
 [1]: https://www.qt.io
