@@ -5,10 +5,10 @@
 
 enum DireccionMovimiento {
     QUIETO = 0,
-    DERECHA = 1,
-    IZQUIERDA = 2,
-    ARRIBA = 3,
-    ABAJO = 4
+    DERECHA,
+    IZQUIERDA,
+    ARRIBA,
+    ABAJO
 };
 
 class Goku : public ObjetoJuego
@@ -18,37 +18,24 @@ public:
 
     void actualizar(float tiempo) override;
     void dibujar(QPainter& pintor) override;
-    void setColision(ObjetoJuego* otro) override;
 
     void moverIzquierda();
     void moverDerecha();
-    void moverArriba();
-    void moverAbajo();
     void detenerMovimiento();
 
-    void establecerLimites(int ancho, int alto);
+    void cambiarDireccion(DireccionMovimiento nuevaDireccion);
 
 private:
     int cuadroActual;
-    int cuadrosPorFila;
     int anchoCuadro;
     int altoCuadro;
-    int contadorAnimacion;
+    int cuadrosPorFila;
     int velocidadAnimacion;
+    int contadorAnimacion;
     DireccionMovimiento direccionActual;
-    DireccionMovimiento ultimaDireccion;
 
-    int limiteAncho;
-    int limiteAlto;
-
-
-    bool moviendose;
-    int tiempoQuieto;
-    float velocidadMovimiento;
-
-    void cambiarDireccion(DireccionMovimiento nuevaDireccion);
-    int obtenerCuadroParaDireccion(DireccionMovimiento direccion, int frame);
-    int obtenerCuadrosParaDireccion(DireccionMovimiento direccion);
+    void actualizarCuadro();
+    int obtenerIndiceCuadro(DireccionMovimiento direccion, int frame);
 };
 
 #endif // GOKU_H

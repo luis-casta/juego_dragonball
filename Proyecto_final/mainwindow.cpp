@@ -10,7 +10,6 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
 
-    puntaje = 0;
     juegoActivo = false;
 
     qDebug() << "Iniciando MainWindow";
@@ -43,9 +42,6 @@ void MainWindow::crearInterfaz()
     areaJuego->setMinimumSize(800, 600);
     areaJuego->setStyleSheet("background-color: lightblue;");
 
-    labelPuntaje = new QLabel("Puntaje: 0");
-    labelPuntaje->setStyleSheet("font-size: 16px; font-weight: bold;");
-
     botonIniciar = new QPushButton("Iniciar Juego");
     botonSalir = new QPushButton("Salir");
 
@@ -54,7 +50,6 @@ void MainWindow::crearInterfaz()
     layoutBotones->addWidget(botonSalir);
 
     layoutPrincipal->addWidget(areaJuego);
-    layoutPrincipal->addWidget(labelPuntaje);
     layoutPrincipal->addLayout(layoutBotones);
 
     widgetCentral->setLayout(layoutPrincipal);
@@ -68,12 +63,9 @@ void MainWindow::crearInterfaz()
 void MainWindow::iniciarJuego()
 {
     juegoActivo = true;
-    puntaje = 0;
-    actualizarPuntaje();
     temporizador->start();
     botonIniciar->setText("Reiniciar");
 
-    // IMPORTANTE: Dar foco al área de juego para recibir eventos de teclado
     areaJuego->setFocus();
 
     qDebug() << "Juego iniciado - Foco establecido en AreaJuego";
@@ -86,28 +78,10 @@ void MainWindow::salirJuego()
 
 void MainWindow::actualizarJuego()
 {
-    static int contador = 0;
-
     if (juegoActivo) {
-        // Actualizar animación de Goku
         if (areaJuego && areaJuego->goku) {
             areaJuego->goku->actualizar(0.016f);  // 16ms por frame
         }
-
-        contador++;
-
-        // Solo suma puntaje cada 60 frames (1 segundo)
-        if (contador >= 60) {
-            puntaje += 1;
-            actualizarPuntaje();
-            contador = 0;
-        }
-
         areaJuego->update();
     }
-}
-
-void MainWindow::actualizarPuntaje()
-{
-    labelPuntaje->setText(QString("Puntaje: %1").arg(puntaje));
 }

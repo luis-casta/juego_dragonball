@@ -13,9 +13,9 @@ AreaJuego::AreaJuego(QWidget* parent)
         qDebug() << "Fondo cargado correctamente";
     }
 
-    // Posición inicial de Goku: en el suelo del fondo
-    int posXInicial = (fondo.width() / 2) - 30;  // Centrado horizontalmente, ajusta 30 según ancho de Goku
-    int posYInicial = fondo.height() - 73;       // Altura del fondo menos altura de Goku (73)
+    // Posición inicial de Goku: esquina inferior izquierda del fondo
+    int posXInicial = 0;
+    int posYInicial = fondo.height() - 73;  // Altura del sprite
 
     goku = new Goku(posXInicial, posYInicial, ":/imagenes/spritegoku.png");
 
@@ -52,13 +52,16 @@ void AreaJuego::keyPressEvent(QKeyEvent* event)
         case Qt::Key_D:
             goku->moverDerecha();
             break;
-        case Qt::Key_Up:
-        case Qt::Key_W:
-            goku->moverArriba();
-            break;
+        // case Qt::Key_Up:
+        // case Qt::Key_W:
+        //     goku->moverArriba();
+        //     break;
         case Qt::Key_Down:
         case Qt::Key_S:
             goku->moverAbajo();
+            break;
+        case Qt::Key_Space:
+            goku->saltar();
             break;
         }
         update();
@@ -80,8 +83,6 @@ void AreaJuego::paintEvent(QPaintEvent* /*event*/)
         int fondoY = (height() - fondo.height()) / 2;
 
         painter.drawPixmap(fondoX, fondoY, fondo);
-
-        // Trasladar el origen para que Goku se dibuje relativo al fondo
         painter.translate(fondoX, fondoY);
     } else {
         painter.fillRect(rect(), QColor(173, 216, 230));
