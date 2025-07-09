@@ -86,11 +86,10 @@ void Goku::actualizarAnimacion()
     }
 
     if (agachado) {
-        // Mostrar sprite de agachado fila 4, columna 6
         int xFrame = 6 * anchoCuadro;
         int yFrame = 4 * altoCuadro;
         setPixmap(spriteSheet.copy(xFrame, yFrame, anchoCuadro, altoCuadro));
-        return;  // No animar más mientras está agachado
+        return;
     }
 
     if (dx != 0) {
@@ -103,10 +102,19 @@ void Goku::actualizarAnimacion()
         frameActual = 0;
     }
 
-    int fila = (dx >= 0) ? 2 : 1;
+    int fila = 2;  // Usar siempre fila 2 para caminar
 
     int xFrame = frameActual * anchoCuadro;
     int yFrame = fila * altoCuadro;
 
-    setPixmap(spriteSheet.copy(xFrame, yFrame, anchoCuadro, altoCuadro));
+    QPixmap frame = spriteSheet.copy(xFrame, yFrame, anchoCuadro, altoCuadro);
+
+    // Reflejar sprite para izquierda
+    if (dx < 0) {
+        QTransform transform;
+        transform.scale(-1, 1);
+        frame = frame.transformed(transform);
+    }
+
+    setPixmap(frame);
 }

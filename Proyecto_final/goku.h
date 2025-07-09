@@ -4,8 +4,10 @@
 #include <QGraphicsPixmapItem>
 #include <QObject>
 #include <QTimer>
+#include "objetojuego.h"
 
-class Goku : public QObject, public QGraphicsPixmapItem
+class Goku : public QObject, public ObjetoJuego
+//class Goku : public QObject, public QGraphicsPixmapItem
 {
     Q_OBJECT
 public:
