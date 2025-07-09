@@ -1,64 +1,45 @@
 #ifndef GOKU_H
 #define GOKU_H
 
-#include "objetojuego.h"
+#include <QGraphicsPixmapItem>
+#include <QObject>
+#include <QTimer>
 
-enum DireccionMovimiento {
-    QUIETO = 0,
-    DERECHA,
-    IZQUIERDA,
-    ARRIBA,
-    ABAJO
-};
-
-enum EstadoSalto {
-    SIN_SALTO,
-    SUBIENDO,
-    BAJANDO
-};
-
-class Goku : public ObjetoJuego
+class Goku : public QObject, public QGraphicsPixmapItem
 {
+    Q_OBJECT
 public:
-    Goku(float x, float y, QString archivoSprite);
-
-    void actualizar(float tiempo) override;
-    void dibujar(QPainter& pintor) override;
+    Goku();
 
     void moverIzquierda();
     void moverDerecha();
     void detenerMovimiento();
     void saltar();
 
-    void establecerLimites(int ancho, int alto);
+public slots:
+    void actualizarAnimacion();
 
-    void setColision(ObjetoJuego* otro) override;  // CORREGIDO: Declaración correcta
+protected:
+    void keyPressEvent(QKeyEvent* event) override;
+    void keyReleaseEvent(QKeyEvent* event) override;
 
 private:
-    int cuadroActual;
+    QPixmap spriteSheet;
+    int frameActual;
     int anchoCuadro;
     int altoCuadro;
     int cuadrosPorFila;
     int velocidadAnimacion;
     int contadorAnimacion;
-    DireccionMovimiento direccionActual;
-    DireccionMovimiento ultimaDireccion;
 
-    int limiteAncho;
-    int limiteAlto;
+    int dx;  // Movimiento horizontal
 
-    bool moviendose;
-    int tiempoQuieto;
-    float velocidadMovimiento;
-
-    EstadoSalto estadoSalto;
-    float alturaSaltoMax;
+    // Variables para salto
+    bool saltando;
     float velocidadSalto;
+    float alturaSaltoMax;
     float posicionYInicial;
-
-    void cambiarDireccion(DireccionMovimiento nuevaDireccion);
-    int obtenerIndiceCuadro(DireccionMovimiento direccion, int frame);
-    void manejarSalto(float tiempo);
+    float dy;  // Movimiento vertical
 };
 
 #endif // GOKU_H

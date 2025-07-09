@@ -1,167 +1,109 @@
 #include "goku.h"
-#include <QDebug>
+#include <QKeyEvent>
 
-Goku::Goku(float x, float y, QString archivoSprite)
-    : ObjetoJuego(x, y, 61, 73)
+Goku::Goku()
+    : frameActual(0), anchoCuadro(61), altoCuadro(73), cuadrosPorFila(11),
+    velocidadAnimacion(8), contadorAnimacion(0), dx(0),
+    saltando(false), velocidadSalto(6), alturaSaltoMax(100), dy(0)
 {
-    cargarTextura(archivoSprite);
+    spriteSheet.load(":/imagenes/spritegoku.png");
+    setPixmap(spriteSheet.copy(0, 0, anchoCuadro, altoCuadro));
 
-    anchoCuadro = 61;
-    altoCuadro = 73;
-    cuadrosPorFila = 11;
-    cuadroActual = 0;
-    contadorAnimacion = 0;
-    velocidadAnimacion = 8;
-    direccionActual = QUIETO;
-    ultimaDireccion = ABAJO;
+    setFlag(QGraphicsItem::ItemIsFocusable);
+    setFocus();
 
-    limiteAncho = 800;
-    limiteAlto = 600;
+    posicionYInicial = y();
 
-    moviendose = false;
-    tiempoQuieto = 0;
-    velocidadMovimiento = 4.0f;
+    QTimer* timer = new QTimer(this);
+    connect(timer, &QTimer::timeout, this, &Goku::actualizarAnimacion);
+    timer->start(16);
+}
 
-    estadoSalto = SIN_SALTO;
-    alturaSaltoMax = 100.0f;
-    velocidadSalto = 6.0f;
-    posicionYInicial = y;
-
-    if (texturaObjeto && !texturaObjeto->isNull()) {
-        qDebug() << "Sprite de Goku cargado correctamente";
-    } else {
-        qDebug() << "ERROR: No se pudo cargar el sprite de Goku";
+void Goku::keyPressEvent(QKeyEvent* event)
+{
+    switch (event->key()) {
+    case Qt::Key_Left:
+        dx = -4;
+        break;
+    case Qt::Key_Right:
+        dx = 4;
+        break;
+    case Qt::Key_Space:
+        if (!saltando) {
+            saltando = true;
+            dy = -velocidadSalto;
+            posicionYInicial = y();
+        }
+        break;
     }
 }
 
-void Goku::establecerLimites(int ancho, int alto)
+void Goku::keyReleaseEvent(QKeyEvent* event)
 {
-    limiteAncho = ancho;
-    limiteAlto = alto;
+    switch (event->key()) {
+    case Qt::Key_Left:
+    case Qt::Key_Right:
+        dx = 0;
+        break;
+    }
 }
 
-void Goku::actualizar(float tiempo)
+void Goku::actualizarAnimacion()
 {
-    contadorAnimacion++;
+    // Movimiento horizontal
+    moveBy(dx, 0);
 
-    manejarSalto(tiempo);
+    // Movimiento salto
+    if (saltando) {
+        moveBy(0, dy);
+        if (y() <= posicionYInicial - alturaSaltoMax) {
+            dy = velocidadSalto;
+        }
+        if (y() >= posicionYInicial) {
+            setY(posicionYInicial);
+            saltando = false;
+            dy = 0;
+        }
+    }
 
-    if (moviendose) {
+    // Animación
+    if (dx != 0) {
+        contadorAnimacion++;
         if (contadorAnimacion >= velocidadAnimacion) {
-            cuadroActual++;
-            if (cuadroActual >= 4) {
-                cuadroActual = 0;
-            }
+            frameActual = (frameActual + 1) % 4;
             contadorAnimacion = 0;
         }
-        tiempoQuieto = 0;
-        ultimaDireccion = direccionActual;
     } else {
-        tiempoQuieto++;
-        if (tiempoQuieto < 60) {
-            cuadroActual = 0;
-        } else {
-            if (contadorAnimacion >= 30) {
-                cuadroActual = (cuadroActual == 0) ? 1 : 0;
-                contadorAnimacion = 0;
-            }
-        }
-        direccionActual = ultimaDireccion;
+        frameActual = 0;
     }
 
-    moviendose = false;
-}
+    int fila = (dx >= 0) ? 2 : 1;
+    int x = frameActual * anchoCuadro;
+    int y = fila * altoCuadro;
 
-void Goku::manejarSalto(float /*tiempo*/)
-{
-    if (estadoSalto == SUBIENDO) {
-        posicionY -= velocidadSalto;
-        if (posicionY <= posicionYInicial - alturaSaltoMax) {
-            estadoSalto = BAJANDO;
-        }
-    } else if (estadoSalto == BAJANDO) {
-        posicionY += velocidadSalto;
-        if (posicionY >= posicionYInicial) {
-            posicionY = posicionYInicial;
-            estadoSalto = SIN_SALTO;
-        }
-    }
-}
-
-void Goku::dibujar(QPainter& pintor)
-{
-    if (texturaObjeto && !texturaObjeto->isNull()) {
-        int indiceCuadro = obtenerIndiceCuadro(direccionActual, cuadroActual);
-
-        int fila = indiceCuadro / cuadrosPorFila;
-        int columna = indiceCuadro % cuadrosPorFila;
-
-        int x = columna * anchoCuadro;
-        int y = fila * altoCuadro;
-
-        QPixmap cuadro = texturaObjeto->copy(x, y, anchoCuadro, altoCuadro);
-        pintor.drawPixmap(posicionX, posicionY, cuadro);
-    }
-}
-
-int Goku::obtenerIndiceCuadro(DireccionMovimiento direccion, int frame)
-{
-    switch (direccion) {
-    case QUIETO:
-    case ABAJO:
-        return frame;
-    case IZQUIERDA:
-        return 11 + frame;
-    case DERECHA:
-        return 22 + frame;
-    case ARRIBA:
-        return 33 + frame;
-    default:
-        return 0;
-    }
-}
-
-void Goku::cambiarDireccion(DireccionMovimiento nuevaDireccion)
-{
-    if (direccionActual != nuevaDireccion) {
-        direccionActual = nuevaDireccion;
-        cuadroActual = 0;
-        contadorAnimacion = 0;
-    }
-    moviendose = (nuevaDireccion != QUIETO);
+    setPixmap(spriteSheet.copy(x, y, anchoCuadro, altoCuadro));
 }
 
 void Goku::moverIzquierda()
 {
-    float nuevaX = posicionX - velocidadMovimiento;
-    if (nuevaX >= 0) {
-        posicionX = nuevaX;
-        cambiarDireccion(IZQUIERDA);
-    }
+    dx = -4;
 }
 
 void Goku::moverDerecha()
 {
-    float nuevaX = posicionX + velocidadMovimiento;
-    if (nuevaX <= limiteAncho - anchoCuadro) {
-        posicionX = nuevaX;
-        cambiarDireccion(DERECHA);
-    }
+    dx = 4;
 }
 
 void Goku::detenerMovimiento()
 {
-    cambiarDireccion(QUIETO);
+    dx = 0;
 }
 
 void Goku::saltar()
 {
-    if (estadoSalto == SIN_SALTO) {
-        estadoSalto = SUBIENDO;
+    if (!saltando) {
+        saltando = true;
+        dy = -velocidadSalto;
+        posicionYInicial = y();
     }
-}
-
-void Goku::setColision(ObjetoJuego* /*otro*/)
-{
-
 }

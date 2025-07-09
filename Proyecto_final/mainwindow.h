@@ -2,9 +2,9 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
-#include <QTimer>
-
-class AreaJuego;
+#include <QGraphicsView>
+#include <QGraphicsScene>
+#include "goku.h"
 
 class MainWindow : public QMainWindow
 {
@@ -14,12 +14,10 @@ public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
-private slots:
-    void actualizarJuego();
-
 private:
-    AreaJuego* areaJuego;
-    QTimer* temporizador;
+    QGraphicsView* view;
+    QGraphicsScene* scene;
+    Goku* goku;
 };
 
 #endif // MAINWINDOW_H

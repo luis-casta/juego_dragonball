@@ -1,28 +1,27 @@
 #include "mainwindow.h"
-#include "areajuego.h"
-#include <QVBoxLayout>
+#include <QGraphicsPixmapItem>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
 {
-    areaJuego = new AreaJuego(this);
-    setCentralWidget(areaJuego);
 
-    temporizador = new QTimer(this);
-    temporizador->setInterval(16);  // 60 FPS aprox.
+    scene = new QGraphicsScene(this);
+    view = new QGraphicsView(scene, this);
+    setCentralWidget(view);
 
-    connect(temporizador, &QTimer::timeout, this, &MainWindow::actualizarJuego);
+    QPixmap fondo(":/imagenes/escena1.png");
+    scene->setSceneRect(0, 0, fondo.width(), fondo.height());
+    scene->addPixmap(fondo);
 
-    temporizador->start();
+    // Crear y agregar Goku
+    goku = new Goku();
+    goku->setPos(0, fondo.height() - 73);  // Posición inicial en la base del fondo
+    scene->addItem(goku);
+
+    // Darle foco para que reciba eventos de teclado
+    goku->setFocus();
 }
 
 MainWindow::~MainWindow()
 {
-}
-
-void MainWindow::actualizarJuego()
-{
-    if (areaJuego) {
-        areaJuego->actualizar(0.016f);
-    }
 }
