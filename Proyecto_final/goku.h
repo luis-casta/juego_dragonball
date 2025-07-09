@@ -17,6 +17,9 @@ public:
     void saltar();
     void agacharse();
     void levantarse();
+    int getVidas() const { return vidas; }
+    void perderVida() { if (vidas > 0) vidas--; }
+    void reiniciarVidas() { vidas = 3; }
 
 public slots:
     void actualizarAnimacion();
@@ -38,6 +41,7 @@ private:
     float posicionYInicial;
     bool puedeSaltar;
     float dy;
+    int vidas;
 
 };
 

@@ -11,8 +11,6 @@ MainWindow::MainWindow(QWidget *parent)
     view->setFixedSize(820, 620);
     setCentralWidget(view);
 
-
-
     QPixmap fondo(":/imagenes/escena1.png");
     if (!fondo.isNull())
         scene->setBackgroundBrush(fondo.scaled(820, 620));
@@ -20,6 +18,12 @@ MainWindow::MainWindow(QWidget *parent)
     goku = new Goku();
     goku->setPos(50, 500);
     scene->addItem(goku);
+
+    labelVidas = new QLabel(this);
+    labelVidas->setText(QString("Vidas: %1").arg(goku->getVidas()));
+    labelVidas->setStyleSheet("QLabel { color : white; font: bold 18px; background: rgba(0,0,0,100); }");
+    labelVidas->setGeometry(10, 10, 120, 30);
+    labelVidas->show();
     // Plataforma flotante
     plataforma = new PlataformaFlotante(350, 400, 40, 2);
     scene->addItem(plataforma);
@@ -40,6 +44,10 @@ MainWindow::MainWindow(QWidget *parent)
 }
 
 MainWindow::~MainWindow() {}
+void MainWindow::actualizarVidas()
+{
+    labelVidas->setText(QString("Vidas: %1").arg(goku->getVidas()));
+}
 
 void MainWindow::keyPressEvent(QKeyEvent* event)
 {

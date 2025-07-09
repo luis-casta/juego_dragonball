@@ -12,14 +12,16 @@ SOURCES += \
     goku.cpp \
     main.cpp \
     mainwindow.cpp \
-    objetojuego.cpp
+    objetojuego.cpp \
+    proyectil.cpp
 
 HEADERS += \
     esferadragon.h \
     goku.h \
     mainwindow.h \
     objetojuego.h \
-    plataforma.h
+    plataforma.h \
+    proyectil.h
 
 FORMS += \
     mainwindow.ui

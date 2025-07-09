@@ -5,7 +5,7 @@
 Goku::Goku()
     : frameActual(0), anchoCuadro(61), altoCuadro(79), totalFrames(11),
     velocidadAnimacion(5), contadorAnimacion(0), dx(0),
-    saltando(false), agachado(false), velocidadSalto(13), alturaSaltoMax(150), puedeSaltar(true), dy(0)
+    saltando(false), agachado(false), velocidadSalto(13), alturaSaltoMax(150), puedeSaltar(true), dy(0),vidas(3)
 
 {
     spriteSheet.load(":/imagenes/spritegoku.png");

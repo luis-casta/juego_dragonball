@@ -4,6 +4,7 @@
 #include <QMainWindow>
 #include <QGraphicsView>
 #include <QGraphicsScene>
+#include <QLabel>
 #include "goku.h"
 #include "plataforma.h"
 #include "esferadragon.h"
@@ -15,6 +16,7 @@ class MainWindow : public QMainWindow
 public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
+    void actualizarVidas();
 
 protected:
     void keyPressEvent(QKeyEvent* event) override;
@@ -26,6 +28,7 @@ private:
     Goku* goku;
     PlataformaFlotante* plataforma;
     EsferaDragon* esfera;
+    QLabel* labelVidas;
 };
 
 #endif // MAINWINDOW_H
