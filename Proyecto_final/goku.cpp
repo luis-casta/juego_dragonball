@@ -79,7 +79,6 @@ void Goku::actualizarAnimacion()
     for (QGraphicsItem* item : std::as_const(itemsDebajo)) {
         PlataformaFlotante* plataforma = dynamic_cast<PlataformaFlotante*>(item);
         if (plataforma) {
-            // Verificar que Goku esté realmente sobre la plataforma
             if (x() + anchoCuadro > plataforma->x() &&
                 x() < plataforma->x() + plataforma->rect().width()) {
                 plataformaDebajo = plataforma;
@@ -88,37 +87,46 @@ void Goku::actualizarAnimacion()
         }
     }
 
-    if (plataformaDebajo) {
-        // Está sobre una plataforma - moverse con ella
-        qreal nuevaY = plataformaDebajo->y() - altoCuadro + 2;
-        setY(nuevaY);
-        saltando = false;
-        dy = 0;
-    } else {
-        // No está sobre plataforma - aplicar gravedad
-        if (!saltando && y() + altoCuadro < posicionYInicial) {
-            saltando = true;
-            dy = 2; // Empezar a caer
+    // Manejar salto PRIMERO
+    if (saltando) {
+        dy += 0.5; // Gravedad
+        qreal nuevaY = y() + dy;
+
+        // Verificar si aterriza en el suelo
+        if (nuevaY >= posicionYInicial) {
+            nuevaY = posicionYInicial;
+            saltando = false;
+            dy = 0;
         }
 
-        if (saltando) {
-            dy += 0.5; // Gravedad
-            qreal nuevaY = y() + dy;
+        // Verificar si aterriza en plataforma
+        if (plataformaDebajo && dy > 0 && nuevaY + altoCuadro >= plataformaDebajo->y()) {
+            nuevaY = plataformaDebajo->y() - altoCuadro + 2;
+            saltando = false;
+            dy = 0;
+        }
 
-            // Verificar si aterriza en el suelo
-            if (nuevaY >= posicionYInicial) {
-                nuevaY = posicionYInicial;
-                saltando = false;
-                dy = 0;
-            }
+        // Límite superior
+        if (nuevaY < limites.top()) {
+            nuevaY = limites.top();
+            dy = 2;
+        }
 
-            // Límite superior
-            if (nuevaY < limites.top()) {
-                nuevaY = limites.top();
+        setY(nuevaY);
+    }
+    else {
+        // No está saltando - seguir plataforma o aplicar gravedad
+        if (plataformaDebajo) {
+            // Seguir el movimiento de la plataforma
+            qreal nuevaY = plataformaDebajo->y() - altoCuadro + 2;
+            setY(nuevaY);
+            dy = 0;
+        } else {
+            // No está sobre plataforma - empezar a caer
+            if (y() + altoCuadro < posicionYInicial) {
+                saltando = true;
                 dy = 2;
             }
-
-            setY(nuevaY);
         }
     }
 
