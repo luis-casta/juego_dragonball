@@ -2,7 +2,6 @@
 #include <QPainter>
 #include <QDebug>
 #include <QColor>
-#include <QKeyEvent>
 
 AreaJuego::AreaJuego(QWidget* parent)
     : QWidget(parent)
@@ -13,13 +12,10 @@ AreaJuego::AreaJuego(QWidget* parent)
         qDebug() << "Fondo cargado correctamente";
     }
 
-    // Posición inicial de Goku: esquina inferior izquierda del fondo
     int posXInicial = 0;
-    int posYInicial = fondo.height() - 73;  // Altura del sprite
+    int posYInicial = fondo.height() - 73;  // Altura sprite Goku
 
     goku = new Goku(posXInicial, posYInicial, ":/imagenes/spritegoku.png");
-
-    // Establecer límites basados en el tamaño del fondo
     goku->establecerLimites(fondo.width(), fondo.height());
 
     setFocusPolicy(Qt::StrongFocus);
@@ -28,50 +24,15 @@ AreaJuego::AreaJuego(QWidget* parent)
 
 AreaJuego::~AreaJuego()
 {
-    if (goku) {
-        delete goku;
-        goku = nullptr;
-    }
+    delete goku;
 }
 
-void AreaJuego::cambiarFondo(const QString& archivoFondo)
+void AreaJuego::actualizar(float /*deltaTiempo*/)
 {
-    fondo.load(archivoFondo);
+    if (goku) {
+        goku->actualizar(0.016f);
+    }
     update();
-}
-
-void AreaJuego::keyPressEvent(QKeyEvent* event)
-{
-    if (goku) {
-        switch (event->key()) {
-        case Qt::Key_Left:
-        case Qt::Key_A:
-            goku->moverIzquierda();
-            break;
-        case Qt::Key_Right:
-        case Qt::Key_D:
-            goku->moverDerecha();
-            break;
-        // case Qt::Key_Up:
-        // case Qt::Key_W:
-        //     goku->moverArriba();
-        //     break;
-        case Qt::Key_Down:
-        case Qt::Key_S:
-            goku->moverAbajo();
-            break;
-        case Qt::Key_Space:
-            goku->saltar();
-            break;
-        }
-        update();
-    }
-    QWidget::keyPressEvent(event);
-}
-
-void AreaJuego::mousePressEvent(QMouseEvent* /*event*/)
-{
-    setFocus();
 }
 
 void AreaJuego::paintEvent(QPaintEvent* /*event*/)
@@ -91,4 +52,48 @@ void AreaJuego::paintEvent(QPaintEvent* /*event*/)
     if (goku) {
         goku->dibujar(painter);
     }
+}
+
+void AreaJuego::keyPressEvent(QKeyEvent* event)
+{
+    if (!goku) return;
+
+    switch (event->key()) {
+    case Qt::Key_Left:
+    case Qt::Key_A:
+        goku->moverIzquierda();
+        break;
+    case Qt::Key_Right:
+    case Qt::Key_D:
+        goku->moverDerecha();
+        break;
+    case Qt::Key_Space:
+        goku->saltar();
+        break;
+    }
+
+    update();
+    QWidget::keyPressEvent(event);
+}
+
+void AreaJuego::keyReleaseEvent(QKeyEvent* event)
+{
+    if (!goku) return;
+
+    switch (event->key()) {
+    case Qt::Key_Left:
+    case Qt::Key_A:
+    case Qt::Key_Right:
+    case Qt::Key_D:
+        goku->detenerMovimiento();
+        break;
+    }
+
+    update();
+    QWidget::keyReleaseEvent(event);
+}
+
+void AreaJuego::mousePressEvent(QMouseEvent* /*event*/)
+{
+    setFocus();
 }

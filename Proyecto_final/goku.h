@@ -11,6 +11,12 @@ enum DireccionMovimiento {
     ABAJO
 };
 
+enum EstadoSalto {
+    SIN_SALTO,
+    SUBIENDO,
+    BAJANDO
+};
+
 class Goku : public ObjetoJuego
 {
 public:
@@ -22,8 +28,11 @@ public:
     void moverIzquierda();
     void moverDerecha();
     void detenerMovimiento();
+    void saltar();
 
-    void cambiarDireccion(DireccionMovimiento nuevaDireccion);
+    void establecerLimites(int ancho, int alto);
+
+    void setColision(ObjetoJuego* otro) override;  // CORREGIDO: Declaración correcta
 
 private:
     int cuadroActual;
@@ -33,9 +42,23 @@ private:
     int velocidadAnimacion;
     int contadorAnimacion;
     DireccionMovimiento direccionActual;
+    DireccionMovimiento ultimaDireccion;
 
-    void actualizarCuadro();
+    int limiteAncho;
+    int limiteAlto;
+
+    bool moviendose;
+    int tiempoQuieto;
+    float velocidadMovimiento;
+
+    EstadoSalto estadoSalto;
+    float alturaSaltoMax;
+    float velocidadSalto;
+    float posicionYInicial;
+
+    void cambiarDireccion(DireccionMovimiento nuevaDireccion);
     int obtenerIndiceCuadro(DireccionMovimiento direccion, int frame);
+    void manejarSalto(float tiempo);
 };
 
 #endif // GOKU_H
