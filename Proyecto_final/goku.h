@@ -19,22 +19,17 @@ public:
 public slots:
     void actualizarAnimacion();
 
-protected:
-    void keyPressEvent(QKeyEvent* event) override;
-    void keyReleaseEvent(QKeyEvent* event) override;
-
 private:
     QPixmap spriteSheet;
     int frameActual;
     int anchoCuadro;
     int altoCuadro;
-    int cuadrosPorFila;
+    int totalFrames;
     int velocidadAnimacion;
     int contadorAnimacion;
 
     int dx;  // Movimiento horizontal
 
-    // Variables para salto
     bool saltando;
     float velocidadSalto;
     float alturaSaltoMax;
