@@ -15,6 +15,8 @@ public:
     void moverDerecha();
     void detenerMovimiento();
     void saltar();
+    void agacharse();
+    void levantarse();
 
 public slots:
     void actualizarAnimacion();
@@ -31,6 +33,7 @@ private:
     int dx;  // Movimiento horizontal
 
     bool saltando;
+    bool agachado;
     float velocidadSalto;
     float alturaSaltoMax;
     float posicionYInicial;

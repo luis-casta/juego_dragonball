@@ -7,6 +7,7 @@ MainWindow::MainWindow(QWidget *parent)
 {
     scene = new QGraphicsScene(this);
     view = new QGraphicsView(scene, this);
+    view->scale(1.5, 1.5);
     setCentralWidget(view);
 
     QPixmap fondo(":/imagenes/escena1.png");
@@ -14,10 +15,10 @@ MainWindow::MainWindow(QWidget *parent)
     scene->addPixmap(fondo);
 
     goku = new Goku();
-    goku->setPos(0, fondo.height() - 79);  // Ajusta según altoCuadro
+    goku->setPos(0, fondo.height() - 79);  // Ajusta segun cuadro
     scene->addItem(goku);
 
-    setFocus();  // Para que MainWindow reciba eventos de teclado
+    setFocus();  // eventos de teclado
 }
 
 MainWindow::~MainWindow()
@@ -36,6 +37,9 @@ void MainWindow::keyPressEvent(QKeyEvent* event)
     case Qt::Key_Space:
         goku->saltar();
         break;
+    case Qt::Key_Down:
+        goku->agacharse();
+        break;
     default:
         QMainWindow::keyPressEvent(event);
     }
@@ -47,6 +51,9 @@ void MainWindow::keyReleaseEvent(QKeyEvent* event)
     case Qt::Key_Left:
     case Qt::Key_Right:
         goku->detenerMovimiento();
+        break;
+    case Qt::Key_Down:
+        goku->levantarse();
         break;
     default:
         QMainWindow::keyReleaseEvent(event);

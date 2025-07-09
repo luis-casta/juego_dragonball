@@ -4,7 +4,7 @@
 Goku::Goku()
     : frameActual(0), anchoCuadro(61), altoCuadro(79), totalFrames(11),
     velocidadAnimacion(5), contadorAnimacion(0), dx(0),
-    saltando(false), velocidadSalto(8), alturaSaltoMax(150), dy(0)
+    saltando(false), agachado(false), velocidadSalto(8), alturaSaltoMax(150), dy(0)
 {
     spriteSheet.load(":/imagenes/spritegoku.png");
     setPixmap(spriteSheet.copy(0, 0, anchoCuadro, altoCuadro));
@@ -21,12 +21,14 @@ Goku::Goku()
 
 void Goku::moverIzquierda()
 {
-    dx = -5;
+    if (!agachado)
+        dx = -5;
 }
 
 void Goku::moverDerecha()
 {
-    dx = 5;
+    if (!agachado)
+        dx = 5;
 }
 
 void Goku::detenerMovimiento()
@@ -36,11 +38,24 @@ void Goku::detenerMovimiento()
 
 void Goku::saltar()
 {
-    if (!saltando) {
+    if (!saltando && !agachado) {
         saltando = true;
         dy = -velocidadSalto;
         posicionYInicial = y();
     }
+}
+
+void Goku::agacharse()
+{
+    agachado = true;
+    dx = 0;  // No se mueve agachado
+    frameActual = 0;  // Reiniciar animación
+}
+
+void Goku::levantarse()
+{
+    agachado = false;
+    frameActual = 0;
 }
 
 void Goku::actualizarAnimacion()
@@ -68,6 +83,14 @@ void Goku::actualizarAnimacion()
             dy = 0;
         }
         setY(nuevaY);
+    }
+
+    if (agachado) {
+        // Mostrar sprite de agachado fila 4, columna 6
+        int xFrame = 6 * anchoCuadro;
+        int yFrame = 4 * altoCuadro;
+        setPixmap(spriteSheet.copy(xFrame, yFrame, anchoCuadro, altoCuadro));
+        return;  // No animar más mientras está agachado
     }
 
     if (dx != 0) {
