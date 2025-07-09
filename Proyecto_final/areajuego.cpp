@@ -2,19 +2,27 @@
 #include <QPainter>
 #include <QDebug>
 #include <QColor>
+#include <QKeyEvent>  // AGREGAR ESTA LÍNEA
 
 AreaJuego::AreaJuego(QWidget* parent)
     : QWidget(parent)
 {
-    goku = new Goku(100, 100, ":/imagenes/spritegoku.png");  // Con :/imagenes/
+    goku = new Goku(100, 100, ":/imagenes/spritegoku.png");
 
-    if (fondo.load(":/imagenes/escena1.png")) {              // Con :/imagenes/
+    setFocusPolicy(Qt::StrongFocus);
+
+    if (fondo.load(":/imagenes/escena1.png")) {
         qDebug() << "Fondo cargado correctamente";
-        qDebug() << "Tamaño del fondo:" << fondo.width() << "x" << fondo.height();
+
+        // Establecer límites basados en el tamaño del fondo
+        if (goku) {
+            goku->establecerLimites(fondo.width(), fondo.height());
+        }
     } else {
         qDebug() << "ERROR: No se pudo cargar el fondo";
     }
 }
+
 AreaJuego::~AreaJuego()
 {
     if (goku) {
@@ -29,10 +37,36 @@ void AreaJuego::cambiarFondo(const QString& archivoFondo)
     update();
 }
 
+void AreaJuego::keyPressEvent(QKeyEvent* event)
+{
+    if (goku) {
+        switch (event->key()) {
+        case Qt::Key_Left:
+        case Qt::Key_A:
+            goku->moverIzquierda();
+            break;
+        case Qt::Key_Right:
+        case Qt::Key_D:
+            goku->moverDerecha();
+            break;
+        case Qt::Key_Up:
+        case Qt::Key_W:
+            goku->moverArriba();
+            break;
+        case Qt::Key_Down:
+        case Qt::Key_S:
+            goku->moverAbajo();
+            break;
+        }
+        update();
+    }
+
+    QWidget::keyPressEvent(event);
+}
+
 void AreaJuego::paintEvent(QPaintEvent* /*event*/)
 {
     QPainter painter(this);
-    qDebug() << "paintEvent llamado - Area:" << width() << "x" << height();
 
     if (!fondo.isNull()) {
         int fondoX = (width() - fondo.width()) / 2;
@@ -46,16 +80,11 @@ void AreaJuego::paintEvent(QPaintEvent* /*event*/)
             int escY = (height() - fondoEscalado.height()) / 2;
             painter.drawPixmap(escX, escY, fondoEscalado);
         }
-
-        qDebug() << "Fondo dibujado";
     } else {
-        qDebug() << "Fondo es null - dibujando color de respaldo";
         painter.fillRect(rect(), QColor(173, 216, 230));
     }
 
     if (goku) {
         goku->dibujar(painter);
-    } else {
-        qDebug() << "Goku es null";
     }
 }

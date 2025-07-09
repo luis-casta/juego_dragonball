@@ -3,6 +3,7 @@
 
 #include <QWidget>
 #include <QPixmap>
+#include <QKeyEvent>
 #include "goku.h"
 
 class AreaJuego : public QWidget
@@ -20,6 +21,7 @@ public:
 
 protected:
     void paintEvent(QPaintEvent* event) override;
+    void keyPressEvent(QKeyEvent* event) override;
 };
 
 #endif // AREAJUEGO_H
