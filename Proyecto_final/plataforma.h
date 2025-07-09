@@ -1,26 +1,30 @@
 #ifndef PLATAFORMA_H
 #define PLATAFORMA_H
 
-#include "objetojuego.h"
+#include <QGraphicsRectItem>
 #include <QTimer>
 #include <QtMath>
+#include <QBrush>
+#include <QObject>
 
-class PlataformaFlotante : public QObject, public ObjetoJuego
+class PlataformaFlotante : public QGraphicsRectItem
 {
-    Q_OBJECT
 public:
     PlataformaFlotante(qreal x, qreal y, qreal amplitud, qreal frecuencia, QGraphicsItem* parent = nullptr)
-        : ObjetoJuego(), posX(x), posY(y), A(amplitud), w(frecuencia), t(0)
+        : QGraphicsRectItem(0, 0, 80, 20, parent), posX(x), posY(y), A(amplitud), w(frecuencia), t(0)
     {
-        setPixmap(QPixmap(":/imagenes/plataforma.png").scaled(80, 20)); // Usa tu imagen o un rectángulo
+        setBrush(QBrush(QColor(160, 82, 45))); // Color plataforma
         setPos(posX, posY);
 
-        timer = new QTimer(this);
-        connect(timer, &QTimer::timeout, this, &PlataformaFlotante::mover);
+        timer = new QTimer();
+        QObject::connect(timer, &QTimer::timeout, [this]() { mover(); });
         timer->start(16);
     }
 
-public slots:
+    ~PlataformaFlotante() {
+        delete timer;
+    }
+
     void mover() {
         t += 0.05;
         setY(posY + A * qSin(w * t));

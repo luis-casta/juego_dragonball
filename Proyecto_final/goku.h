@@ -4,10 +4,8 @@
 #include <QGraphicsPixmapItem>
 #include <QObject>
 #include <QTimer>
-#include "objetojuego.h"
 
-class Goku : public QObject, public ObjetoJuego
-//class Goku : public QObject, public QGraphicsPixmapItem
+class Goku : public QObject, public QGraphicsPixmapItem
 {
     Q_OBJECT
 public:
@@ -32,14 +30,15 @@ private:
     int velocidadAnimacion;
     int contadorAnimacion;
 
-    int dx;  // Movimiento horizontal
-
+    int dx;
     bool saltando;
     bool agachado;
     float velocidadSalto;
     float alturaSaltoMax;
     float posicionYInicial;
-    float dy;  // Movimiento vertical
+    bool puedeSaltar;
+    float dy;
+
 };
 
 #endif // GOKU_H

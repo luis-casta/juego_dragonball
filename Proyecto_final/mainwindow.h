@@ -5,6 +5,8 @@
 #include <QGraphicsView>
 #include <QGraphicsScene>
 #include "goku.h"
+#include "plataforma.h"
+#include "esferadragon.h"
 
 class MainWindow : public QMainWindow
 {
@@ -22,6 +24,8 @@ private:
     QGraphicsView* view;
     QGraphicsScene* scene;
     Goku* goku;
+    PlataformaFlotante* plataforma;
+    EsferaDragon* esfera;
 };
 
 #endif // MAINWINDOW_H

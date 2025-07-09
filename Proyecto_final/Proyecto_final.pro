@@ -12,10 +12,10 @@ SOURCES += \
     goku.cpp \
     main.cpp \
     mainwindow.cpp \
-    objetojuego.cpp \
-    plataforma.cpp
+    objetojuego.cpp
 
 HEADERS += \
+    esferadragon.h \
     goku.h \
     mainwindow.h \
     objetojuego.h \

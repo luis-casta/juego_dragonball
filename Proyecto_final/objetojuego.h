@@ -1,9 +1,9 @@
 #ifndef OBJETOJUEGO_H
 #define OBJETOJUEGO_H
 
-#include <QGraphicsPixmapItem>
+#include <QGraphicsItem>
 
-class ObjetoJuego : public QGraphicsPixmapItem
+class ObjetoJuego : public QGraphicsItem
 {
 public:
     ObjetoJuego() {}

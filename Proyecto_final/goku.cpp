@@ -1,10 +1,12 @@
 #include "goku.h"
 #include <QGraphicsScene>
+#include "plataforma.h"
 
 Goku::Goku()
     : frameActual(0), anchoCuadro(61), altoCuadro(79), totalFrames(11),
     velocidadAnimacion(5), contadorAnimacion(0), dx(0),
-    saltando(false), agachado(false), velocidadSalto(8), alturaSaltoMax(150), dy(0)
+    saltando(false), agachado(false), velocidadSalto(13), alturaSaltoMax(150), puedeSaltar(true), dy(0)
+
 {
     spriteSheet.load(":/imagenes/spritegoku.png");
     setPixmap(spriteSheet.copy(0, 0, anchoCuadro, altoCuadro));
@@ -12,7 +14,7 @@ Goku::Goku()
     setFlag(QGraphicsItem::ItemIsFocusable);
     setFocus();
 
-    posicionYInicial = y();
+    posicionYInicial = 500;//del suelo
 
     QTimer* timer = new QTimer(this);
     connect(timer, &QTimer::timeout, this, &Goku::actualizarAnimacion);
@@ -38,18 +40,17 @@ void Goku::detenerMovimiento()
 
 void Goku::saltar()
 {
-    if (!saltando && !agachado) {
+    if (!saltando) {
         saltando = true;
         dy = -velocidadSalto;
-        posicionYInicial = y();
     }
 }
 
 void Goku::agacharse()
 {
     agachado = true;
-    dx = 0;  // No se mueve agachado
-    frameActual = 0;  // Reiniciar animación
+    dx = 0;
+    frameActual = 0;
 }
 
 void Goku::levantarse()
@@ -71,20 +72,57 @@ void Goku::actualizarAnimacion()
 
     setX(nuevaX);
 
-    if (saltando) {
-        qreal nuevaY = y() + dy;
+    // Buscar plataforma debajo de Goku
+    PlataformaFlotante* plataformaDebajo = nullptr;
+    QList<QGraphicsItem*> itemsDebajo = scene()->items(QRectF(x(), y() + altoCuadro, anchoCuadro, 10));
 
-        if (nuevaY <= posicionYInicial - alturaSaltoMax) {
-            dy = velocidadSalto;
+    for (QGraphicsItem* item : std::as_const(itemsDebajo)) {
+        PlataformaFlotante* plataforma = dynamic_cast<PlataformaFlotante*>(item);
+        if (plataforma) {
+            // Verificar que Goku esté realmente sobre la plataforma
+            if (x() + anchoCuadro > plataforma->x() &&
+                x() < plataforma->x() + plataforma->rect().width()) {
+                plataformaDebajo = plataforma;
+                break;
+            }
         }
-        if (nuevaY >= posicionYInicial) {
-            nuevaY = posicionYInicial;
-            saltando = false;
-            dy = 0;
-        }
-        setY(nuevaY);
     }
 
+    if (plataformaDebajo) {
+        // Está sobre una plataforma - moverse con ella
+        qreal nuevaY = plataformaDebajo->y() - altoCuadro + 2;
+        setY(nuevaY);
+        saltando = false;
+        dy = 0;
+    } else {
+        // No está sobre plataforma - aplicar gravedad
+        if (!saltando && y() + altoCuadro < posicionYInicial) {
+            saltando = true;
+            dy = 2; // Empezar a caer
+        }
+
+        if (saltando) {
+            dy += 0.5; // Gravedad
+            qreal nuevaY = y() + dy;
+
+            // Verificar si aterriza en el suelo
+            if (nuevaY >= posicionYInicial) {
+                nuevaY = posicionYInicial;
+                saltando = false;
+                dy = 0;
+            }
+
+            // Límite superior
+            if (nuevaY < limites.top()) {
+                nuevaY = limites.top();
+                dy = 2;
+            }
+
+            setY(nuevaY);
+        }
+    }
+
+    // Animación del sprite
     if (agachado) {
         int xFrame = 6 * anchoCuadro;
         int yFrame = 4 * altoCuadro;
@@ -102,19 +140,9 @@ void Goku::actualizarAnimacion()
         frameActual = 0;
     }
 
-    int fila = 2;  // Usar siempre fila 2 para caminar
-
+    int fila = 2;
     int xFrame = frameActual * anchoCuadro;
     int yFrame = fila * altoCuadro;
 
-    QPixmap frame = spriteSheet.copy(xFrame, yFrame, anchoCuadro, altoCuadro);
-
-    // Reflejar sprite para izquierda
-    if (dx < 0) {
-        QTransform transform;
-        transform.scale(-1, 1);
-        frame = frame.transformed(transform);
-    }
-
-    setPixmap(frame);
+    setPixmap(spriteSheet.copy(xFrame, yFrame, anchoCuadro, altoCuadro));
 }
