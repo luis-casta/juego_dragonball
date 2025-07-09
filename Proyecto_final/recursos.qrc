@@ -1,0 +1,6 @@
+<RCC>
+    <qresource prefix="/imagenes">
+        <file>escena1.png</file>
+        <file>spritegoku.png</file>
+    </qresource>
+</RCC>
