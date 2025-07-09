@@ -28,16 +28,16 @@ MainWindow::~MainWindow()
 void MainWindow::keyPressEvent(QKeyEvent* event)
 {
     switch(event->key()) {
-    case Qt::Key_Left:
+    case Qt::Key_A:
         goku->moverIzquierda();
         break;
-    case Qt::Key_Right:
+    case Qt::Key_D:
         goku->moverDerecha();
         break;
     case Qt::Key_Space:
         goku->saltar();
         break;
-    case Qt::Key_Down:
+    case Qt::Key_S:
         goku->agacharse();
         break;
     default:
@@ -48,11 +48,11 @@ void MainWindow::keyPressEvent(QKeyEvent* event)
 void MainWindow::keyReleaseEvent(QKeyEvent* event)
 {
     switch(event->key()) {
-    case Qt::Key_Left:
-    case Qt::Key_Right:
+    case Qt::Key_A:
+    case Qt::Key_D:
         goku->detenerMovimiento();
         break;
-    case Qt::Key_Down:
+    case Qt::Key_S:
         goku->levantarse();
         break;
     default:

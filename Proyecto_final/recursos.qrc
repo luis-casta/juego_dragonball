@@ -1,9 +1,9 @@
 <RCC>
     <qresource prefix="/imagenes">
         <file>escena1.png</file>
-        <file>spritegoku.png</file>
-        <file>puarr.png</file>
-        <file>yamchaa.png</file>
         <file>escena2.png</file>
+        <file>puar.png</file>
+        <file>spritegoku.png</file>
+        <file>yamchaa.png</file>
     </qresource>
 </RCC>
