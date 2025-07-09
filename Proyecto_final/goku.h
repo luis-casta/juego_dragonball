@@ -24,6 +24,7 @@ public:
     void moverDerecha();
     void moverArriba();
     void moverAbajo();
+    void detenerMovimiento();
 
     void establecerLimites(int ancho, int alto);
 
@@ -35,12 +36,19 @@ private:
     int contadorAnimacion;
     int velocidadAnimacion;
     DireccionMovimiento direccionActual;
+    DireccionMovimiento ultimaDireccion;
 
     int limiteAncho;
     int limiteAlto;
 
+
+    bool moviendose;
+    int tiempoQuieto;
+    float velocidadMovimiento;
+
     void cambiarDireccion(DireccionMovimiento nuevaDireccion);
     int obtenerCuadroParaDireccion(DireccionMovimiento direccion, int frame);
+    int obtenerCuadrosParaDireccion(DireccionMovimiento direccion);
 };
 
 #endif // GOKU_H

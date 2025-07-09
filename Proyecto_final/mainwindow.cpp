@@ -72,7 +72,11 @@ void MainWindow::iniciarJuego()
     actualizarPuntaje();
     temporizador->start();
     botonIniciar->setText("Reiniciar");
-    qDebug() << "Juego iniciado";
+
+    // IMPORTANTE: Dar foco al área de juego para recibir eventos de teclado
+    areaJuego->setFocus();
+
+    qDebug() << "Juego iniciado - Foco establecido en AreaJuego";
 }
 
 void MainWindow::salirJuego()

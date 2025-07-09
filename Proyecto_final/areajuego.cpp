@@ -2,25 +2,28 @@
 #include <QPainter>
 #include <QDebug>
 #include <QColor>
-#include <QKeyEvent>  // AGREGAR ESTA LÍNEA
+#include <QKeyEvent>
 
 AreaJuego::AreaJuego(QWidget* parent)
     : QWidget(parent)
 {
-    goku = new Goku(100, 100, ":/imagenes/spritegoku.png");
+    if (!fondo.load(":/imagenes/escena1.png")) {
+        qDebug() << "ERROR: No se pudo cargar el fondo";
+    } else {
+        qDebug() << "Fondo cargado correctamente";
+    }
+
+    // Posición inicial de Goku: en el suelo del fondo
+    int posXInicial = (fondo.width() / 2) - 30;  // Centrado horizontalmente, ajusta 30 según ancho de Goku
+    int posYInicial = fondo.height() - 73;       // Altura del fondo menos altura de Goku (73)
+
+    goku = new Goku(posXInicial, posYInicial, ":/imagenes/spritegoku.png");
+
+    // Establecer límites basados en el tamaño del fondo
+    goku->establecerLimites(fondo.width(), fondo.height());
 
     setFocusPolicy(Qt::StrongFocus);
-
-    if (fondo.load(":/imagenes/escena1.png")) {
-        qDebug() << "Fondo cargado correctamente";
-
-        // Establecer límites basados en el tamaño del fondo
-        if (goku) {
-            goku->establecerLimites(fondo.width(), fondo.height());
-        }
-    } else {
-        qDebug() << "ERROR: No se pudo cargar el fondo";
-    }
+    setFocus();
 }
 
 AreaJuego::~AreaJuego()
@@ -60,8 +63,12 @@ void AreaJuego::keyPressEvent(QKeyEvent* event)
         }
         update();
     }
-
     QWidget::keyPressEvent(event);
+}
+
+void AreaJuego::mousePressEvent(QMouseEvent* /*event*/)
+{
+    setFocus();
 }
 
 void AreaJuego::paintEvent(QPaintEvent* /*event*/)
@@ -72,14 +79,10 @@ void AreaJuego::paintEvent(QPaintEvent* /*event*/)
         int fondoX = (width() - fondo.width()) / 2;
         int fondoY = (height() - fondo.height()) / 2;
 
-        if (fondo.width() < width() && fondo.height() < height()) {
-            painter.drawPixmap(fondoX, fondoY, fondo);
-        } else {
-            QPixmap fondoEscalado = fondo.scaled(width(), height(), Qt::KeepAspectRatio, Qt::SmoothTransformation);
-            int escX = (width() - fondoEscalado.width()) / 2;
-            int escY = (height() - fondoEscalado.height()) / 2;
-            painter.drawPixmap(escX, escY, fondoEscalado);
-        }
+        painter.drawPixmap(fondoX, fondoY, fondo);
+
+        // Trasladar el origen para que Goku se dibuje relativo al fondo
+        painter.translate(fondoX, fondoY);
     } else {
         painter.fillRect(rect(), QColor(173, 216, 230));
     }
