@@ -2,15 +2,21 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
-#include <QGraphicsView>
 #include <QGraphicsScene>
-#include <QLabel>
-#include "proyectil.h"
+#include <QGraphicsView>
 #include <QTimer>
+#include <QLabel>
 #include <QList>
-#include "goku.h"
-#include "plataforma.h"
-#include "esferadragon.h"
+
+QT_BEGIN_NAMESPACE
+namespace Ui { class MainWindow; }
+QT_END_NAMESPACE
+
+// Forward declarations
+class Goku;
+class PlataformaFlotante;
+class EsferaDragon;
+class Proyectil;
 
 class MainWindow : public QMainWindow
 {
@@ -19,22 +25,36 @@ class MainWindow : public QMainWindow
 public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
-    void actualizarVidas();
-    void verificarColisiones();
 
 protected:
     void keyPressEvent(QKeyEvent* event) override;
     void keyReleaseEvent(QKeyEvent* event) override;
 
+private slots:
+    void verificarColisiones();
+
 private:
-    QGraphicsView* view;
+    Ui::MainWindow *ui;
+
+    // Elementos gráficos
     QGraphicsScene* scene;
+    QGraphicsView* view;
+    QLabel* labelVidas;
+
+    // Objetos del juego
     Goku* goku;
     PlataformaFlotante* plataforma;
+    PlataformaFlotante* plataforma2;
+    PlataformaFlotante* plataforma3;
+    PlataformaFlotante* plataforma4;
     EsferaDragon* esfera;
-    QLabel* labelVidas;
-    QTimer* timerProyectiles;
+
+    // Proyectiles y timer
     QList<Proyectil*> proyectiles;
+    QTimer* timerProyectiles;
+
+    // Función auxiliar
+    void actualizarVidas();
 };
 
 #endif // MAINWINDOW_H
