@@ -14,7 +14,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     // Configurar escena y vista
     scene = new QGraphicsScene(this);
-    scene->setSceneRect(0, 0, 800, 600);
+    scene->setSceneRect(0, 0, 820, 620);
 
     view = new QGraphicsView(scene, this);
     view->setFixedSize(820, 620);
@@ -50,11 +50,13 @@ MainWindow::MainWindow(QWidget *parent)
     connect(timerColisiones, &QTimer::timeout, this, &MainWindow::verificarColisiones);
     timerColisiones->start(16);
 
+    // Inicialización de punteros
+    yamcha = nullptr;
+    timerAtaqueYamcha = nullptr;
+    esfera = nullptr;
+
     // Cargar el primer nivel
     cargarNivel(nivelActual);
-    //yamcha
-    yamcha=nullptr;
-    timerAtaqueYamcha = nullptr;
 }
 
 MainWindow::~MainWindow() {
@@ -106,98 +108,6 @@ void MainWindow::verificarColisiones()
     }
 }
 
-void MainWindow::cargarNivel(int nivel)
-{
-    limpiarNivel();
-
-    // Cambiar fondo según el nivel
-    if (nivel == 1) {
-        scene->setBackgroundBrush(QPixmap(":/imagenes/escena1.png").scaled(820, 620));
-    } else if (nivel == 2) {
-        scene->setBackgroundBrush(QPixmap(":/imagenes/escena2.png").scaled(820, 620));
-    }
-
-    // Siempre agregamos a Goku
-    goku->setPos(50, 500);
-    scene->addItem(goku);
-
-    // Configuración específica por nivel
-    if (nivel == 1) {
-        // Plataformas del nivel 1
-        plataformas.append(new PlataformaFlotante(350, 400, 40, 2));
-        plataformas.append(new PlataformaFlotante(450, 350, 30, 1.5));
-        plataformas.append(new PlataformaFlotante(550, 300, 35, 1.8));
-        plataformas.append(new PlataformaFlotante(650, 200, 25, 2.2));
-
-        // Agregar plataformas a la escena
-        for (int i = 0; i < plataformas.size(); ++i)
-            scene->addItem(plataformas[i]);
-
-        // Esfera del dragón nivel 1
-        esfera = new EsferaDragon(700, 100);
-        scene->addItem(esfera);
-
-        // Timer de proyectiles aleatorios nivel 1
-        timerProyectiles->start(1800);
-    }
-    else if (nivel == 2) {
-        // Aquí puedes agregar obstáculos del nivel 2 (rocas, elevaciones, etc.)
-        // Ejemplo:
-        // plataformas.append(new Roca(200, 520));
-        // plataformas.append(new Elevacion(400, 480));
-        // for (int i = 0; i < plataformas.size(); ++i)
-        //     scene->addItem(plataformas[i]);
-
-        // Crear y agregar a Yamcha
-        yamcha = new Yamcha(700, 500);
-        scene->addItem(yamcha);
-
-        // Conectar señal de derrota de Yamcha
-        connect(yamcha, &Yamcha::yamchaDerrotado, this, [=](){
-            // Detener ataques de Yamcha
-            if (timerAtaqueYamcha) {
-                timerAtaqueYamcha->stop();
-            }
-
-            // Eliminar a Yamcha de la escena
-            scene->removeItem(yamcha);
-            delete yamcha;
-            yamcha = nullptr;
-
-            // Mostrar mensaje de victoria
-            QMessageBox::information(this, "¡Yamcha Derrotado!",
-                                     "¡Has derrotado a Yamcha!\n\n"
-                                     "Ahora debes recoger las dos esferas del dragón.");
-
-            // Crear las dos esferas del dragón que Yamcha tenía
-            EsferaDragon* esfera1 = new EsferaDragon(600, 450);
-            EsferaDragon* esfera2 = new EsferaDragon(650, 400);
-            scene->addItem(esfera1);
-            scene->addItem(esfera2);
-
-            // Agregar las esferas a una lista para verificar colisiones
-            // (necesitarás crear esta lista en mainwindow.h)
-            // esferasNivel2.append(esfera1);
-            // esferasNivel2.append(esfera2);
-        });
-
-        // Timer para ataques automáticos de Yamcha
-        timerAtaqueYamcha = new QTimer(this);
-        connect(timerAtaqueYamcha, &QTimer::timeout, this, [=](){
-            if (yamcha && goku)
-                yamcha->atacarAGoku(goku);
-        });
-        timerAtaqueYamcha->start(2000); // Ataca cada 2 segundos
-
-        // Timer de proyectiles aleatorios nivel 2 (opcional, más rápido)
-        timerProyectiles->start(1200);
-    }
-    // Aquí puedes agregar más niveles en el futuro
-    else if (nivel == 3) {
-        // Configuración del nivel 3
-    }
-}
-
 void MainWindow::limpiarNivel()
 {
     // Eliminar plataformas
@@ -221,10 +131,100 @@ void MainWindow::limpiarNivel()
     }
     proyectiles.clear();
 
-    // Si tienes enemigos, elimínalos aquí también
-    // if (yamcha) { scene->removeItem(yamcha); delete yamcha; yamcha = nullptr; }
+    // Desconectar y eliminar Yamcha
+    if (yamcha) {
+        disconnect(yamcha, &Yamcha::yamchaDerrotado, nullptr, nullptr);
+        scene->removeItem(yamcha);
+        delete yamcha;
+        yamcha = nullptr;
+    }
+
+    // Detener y eliminar el timer de ataque de Yamcha
+    if (timerAtaqueYamcha) {
+        timerAtaqueYamcha->stop();
+        delete timerAtaqueYamcha;
+        timerAtaqueYamcha = nullptr;
+    }
+
+    // Detener timer de proyectiles para evitar conflictos
+    if (timerProyectiles->isActive()) {
+        timerProyectiles->stop();
+    }
 }
 
+void MainWindow::cargarNivel(int nivel)
+{
+    limpiarNivel();
+
+    if (nivel == 1) {
+        scene->setSceneRect(0, 0, 800, 600);
+        scene->setBackgroundBrush(QPixmap(":/imagenes/escena1.png").scaled(800, 600));
+        view->setFixedSize(820, 620);
+
+        // Plataformas del nivel 1
+        plataformas.append(new PlataformaFlotante(350, 400, 40, 2));
+        plataformas.append(new PlataformaFlotante(450, 350, 30, 1.5));
+        plataformas.append(new PlataformaFlotante(550, 300, 35, 1.8));
+        plataformas.append(new PlataformaFlotante(650, 200, 25, 2.2));
+
+        for (int i = 0; i < plataformas.size(); ++i)
+            scene->addItem(plataformas[i]);
+
+        // Esfera del dragón nivel 1
+        esfera = new EsferaDragon(700, 100);
+        scene->addItem(esfera);
+
+        timerProyectiles->start(1800);
+    }
+    else if (nivel == 2) {
+        scene->setSceneRect(0, 0, 800, 600);
+        scene->setBackgroundBrush(QPixmap(":/imagenes/escena2.png").scaled(800, 600));
+        view->setFixedSize(820, 620);
+
+        // Eliminar Yamcha anterior si existe
+        if (yamcha) {
+            disconnect(yamcha, &Yamcha::yamchaDerrotado, nullptr, nullptr);
+            scene->removeItem(yamcha);
+            delete yamcha;
+            yamcha = nullptr;
+        }
+
+        yamcha = new Yamcha(500, 345);
+        scene->addItem(yamcha);
+
+        connect(yamcha, &Yamcha::yamchaDerrotado, this, [=](){
+            QMessageBox::information(this, "¡Yamcha Derrotado!",
+                                     "¡Has derrotado a Yamcha!\n\n"
+                                     "Ahora debes recoger las dos esferas del dragón.");
+
+            EsferaDragon* esfera1 = new EsferaDragon(600, 450);
+            EsferaDragon* esfera2 = new EsferaDragon(650, 400);
+            scene->addItem(esfera1);
+            scene->addItem(esfera2);
+
+            // Agrega lógica para esferas nivel 2 si tienes
+        });
+
+        // Timer para ataques automáticos de Yamcha
+        if (timerAtaqueYamcha) {
+            timerAtaqueYamcha->stop();
+            delete timerAtaqueYamcha;
+            timerAtaqueYamcha = nullptr;
+        }
+        timerAtaqueYamcha = new QTimer(this);
+        connect(timerAtaqueYamcha, &QTimer::timeout, this, [=](){
+            if (yamcha && goku)
+                yamcha->atacarAGoku(goku);
+        });
+        timerAtaqueYamcha->start(2000);
+
+        timerProyectiles->start(1200);
+    }
+
+    // Siempre agregamos a Goku
+    goku->setPos(50, 500);
+    scene->addItem(goku);
+}
 void MainWindow::keyPressEvent(QKeyEvent* event)
 {
     switch(event->key()) {

@@ -11,46 +11,50 @@ class Yamcha : public QObject, public QGraphicsPixmapItem
 public:
     Yamcha(qreal x, qreal y, QGraphicsItem* parent = nullptr);
 
-    // Movimiento básico
     void moverIzquierda();
     void moverDerecha();
     void detener();
     void saltar();
 
-    // Ataque
     void atacarAGoku(QGraphicsItem* goku);
 
-    // Vida
     void recibirDanio(int cantidad);
     int getVida() const;
     void setVida(int nuevaVida);
 
-    // Velocidad
-    qreal getVelocidad() const;
-    void setVelocidad(qreal nuevaVelocidad);
-
-    // Dirección
-    int getDireccion() const;
-    void setDireccion(int nuevaDireccion);
+    void iniciarAtaque();
 
 signals:
     void yamchaDerrotado();
 
 public slots:
     void actualizarMovimiento();
+    void actualizarAnimacion();
 
 private:
-    // Atributos básicos
     int vida;
     qreal velocidad;
-    int direccion; // -1: izquierda, 1: derecha, 0: quieto
+    int direccion; // -1 izquierda, 1 derecha, 0 quieto
 
-    // Físicas
-    qreal vx, vy, ax;
+    qreal vx, vy;
     bool enElAire;
 
-    // Timer
     QTimer* timerMovimiento;
+    QTimer* timerAnimacion;
+
+    QPixmap spriteSheet;
+    int frameActual;
+    int columnas;
+    int filas;
+    int anchoFrame;
+    int altoFrame;
+
+    // Variables para animación de ataque
+    bool atacando;
+    int animacionAtaqueFila;
+    int animacionAtaqueInicioCol;
+    int animacionAtaqueFinCol;
+    int frameActualAtaque;
 };
 
 #endif // YAMCHA_H
