@@ -14,6 +14,7 @@ SOURCES += \
     main.cpp \
     mainwindow.cpp \
     objetojuego.cpp \
+    plataforma.cpp \
     proyectil.cpp \
     yamcha.cpp
 

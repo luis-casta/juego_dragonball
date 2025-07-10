@@ -25,6 +25,7 @@ public:
 
 public slots:
     void actualizarAnimacion();
+    void actualizarAnimacionAtaque();
 
 private:
     QPixmap spriteSheet;
@@ -45,6 +46,12 @@ private:
     float dy;
     int vidas;
 
+    // Variables para animación de ataque
+    QTimer* timerAnimacionAtaque;
+    int frameActualAtaque;
+    bool atacando;
+    const int filaAtaque = 1;
+    const int numFramesAtaque = 4; // número de frames en la fila de ataque
 };
 
 #endif // GOKU_H

@@ -112,6 +112,7 @@ void MainWindow::verificarColisiones()
 
         nivelActual = 2;
         cargarNivel(nivelActual);
+        return; // Evitar seguir ejecutando
     }
 
     // Colisión con las dos esferas restantes tras vencer a Yamcha (nivel 2)
@@ -132,10 +133,13 @@ void MainWindow::verificarColisiones()
         if (esferasRestantes == 0) {
             QMessageBox msgBox;
             msgBox.setWindowTitle("¡Felicidades!");
-            msgBox.setText("¡Felicidades! Conseguíste las esferas del dragón. Pide un deseo.");
+            msgBox.setText("¡Felicidades! Conseguíste las esferas del dragón. Pide un deseo. Se cumplirá pronto");
             msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
-            msgBox.button(QMessageBox::Yes)->setText("Volver a jugar");
-            msgBox.button(QMessageBox::No)->setText("Salir");
+
+            if (auto btnYes = msgBox.button(QMessageBox::Yes))
+                btnYes->setText("Volver a jugar");
+            if (auto btnNo = msgBox.button(QMessageBox::No))
+                btnNo->setText("Salir");
 
             int ret = msgBox.exec();
 
@@ -149,6 +153,7 @@ void MainWindow::verificarColisiones()
                 // Salir del programa
                 qApp->quit();
             }
+            return; // Evitar seguir ejecutando
         }
     }
 }
@@ -227,14 +232,13 @@ void MainWindow::cargarNivel(int nivel)
         view->setFixedSize(820, 620);
 
         // Plataformas del nivel 1
-        plataformas.append(new PlataformaFlotante(350, 400, 40, 2));
-        plataformas.append(new PlataformaFlotante(450, 350, 30, 1.5));
-        plataformas.append(new PlataformaFlotante(550, 300, 35, 1.8));
-        plataformas.append(new PlataformaFlotante(650, 200, 25, 2.2));
+        plataformas.append(new PlataformaFlotante(100, 400, 50, 2,false,true));
+        plataformas.append(new PlataformaFlotante(350, 300, 15, 1.5,true,false));
+        plataformas.append(new PlataformaFlotante(500, 250, 25, 1.8,true,true));// ambos ejes
+        plataformas.append(new PlataformaFlotante(650, 200, 10, 2.2,false,true));
 
         for (int i = 0; i < plataformas.size(); ++i)
             scene->addItem(plataformas[i]);
-
         // Esfera del dragón nivel 1
         esfera = new EsferaDragon(700, 100);
         scene->addItem(esfera);

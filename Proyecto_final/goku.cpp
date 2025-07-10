@@ -1,13 +1,15 @@
 #include "goku.h"
 #include <QGraphicsScene>
 #include "plataforma.h"
-#include"yamcha.h"
+#include "yamcha.h"
+#include <cmath>
 
 Goku::Goku()
     : frameActual(0), anchoCuadro(61), altoCuadro(79), totalFrames(11),
-    velocidadAnimacion(5), contadorAnimacion(0), dx(0),
-    saltando(false), agachado(false), velocidadSalto(13), alturaSaltoMax(150), puedeSaltar(true), dy(0),vidas(3)
-
+    velocidadAnimacion(10), contadorAnimacion(0), dx(0),
+    saltando(false), agachado(false), velocidadSalto(13), alturaSaltoMax(150),
+    puedeSaltar(true), dy(0), vidas(3),
+    frameActualAtaque(0), atacando(false)
 {
     spriteSheet.load(":/imagenes/spritegoku.png");
     setPixmap(spriteSheet.copy(0, 0, anchoCuadro, altoCuadro));
@@ -15,11 +17,14 @@ Goku::Goku()
     setFlag(QGraphicsItem::ItemIsFocusable);
     setFocus();
 
-    posicionYInicial = 500;//del suelo
+    posicionYInicial = 500; // del suelo
 
     QTimer* timer = new QTimer(this);
     connect(timer, &QTimer::timeout, this, &Goku::actualizarAnimacion);
     timer->start(16);
+
+    timerAnimacionAtaque = new QTimer(this);
+    connect(timerAnimacionAtaque, &QTimer::timeout, this, &Goku::actualizarAnimacionAtaque);
 }
 
 void Goku::moverIzquierda()
@@ -33,19 +38,7 @@ void Goku::moverDerecha()
     if (!agachado)
         dx = 5;
 }
-void Goku::atacar(Yamcha* yamcha)
-{
-    if (!yamcha) return;
 
-    // Distancia horizontal para verificar si Yamcha está en rango de ataque
-    qreal distanciaX = std::abs(yamcha->x() - this->x());
-
-    const qreal rangoAtaque = 50.0;  // Ajusta según convenga
-
-    if (distanciaX <= rangoAtaque) {
-        yamcha->recibirDanio(2);  // Goku causa 1 punto de daño
-    }
-}
 void Goku::detenerMovimiento()
 {
     dx = 0;
@@ -70,6 +63,52 @@ void Goku::levantarse()
 {
     agachado = false;
     frameActual = 0;
+}
+
+void Goku::atacar(Yamcha* yamcha)
+{
+    if (atacando)
+        return; // Ya está atacando, no reiniciar animación
+
+    if (!yamcha)
+        return;
+
+    // Distancia horizontal para verificar si Yamcha está en rango de ataque
+    qreal distanciaX = std::abs(yamcha->x() - this->x());
+    const qreal rangoAtaque = 50.0;  // Ajusta según convenga
+
+    if (distanciaX <= rangoAtaque) {
+        yamcha->recibirDanio(2);  // Goku causa 2 puntos de daño
+    }
+
+    atacando = true;
+    frameActualAtaque = 0;
+    timerAnimacionAtaque->start(100); // Cambiar frame cada 100 ms
+}
+
+void Goku::actualizarAnimacionAtaque()
+{
+    if (!atacando)
+        return;
+
+    // La fila 2 es índice 1
+    int filaAtaque = 2;
+    int numFramesAtaque = 4 ; // número de frames en la fila de ataque
+
+    QPixmap frame = spriteSheet.copy(frameActualAtaque * anchoCuadro, filaAtaque * altoCuadro, anchoCuadro, altoCuadro);
+    setPixmap(frame);
+
+    frameActualAtaque++;
+
+    if (frameActualAtaque >= numFramesAtaque) {
+        timerAnimacionAtaque->stop();
+        atacando = false;
+
+        // Volver a imagen normal (fila 2, columna 0) para caminar o idle
+        frameActual = 0;
+        int filaCaminar = 2;
+        setPixmap(spriteSheet.copy(frameActual * anchoCuadro, filaCaminar * altoCuadro, anchoCuadro, altoCuadro));
+    }
 }
 
 void Goku::actualizarAnimacion()
@@ -142,6 +181,10 @@ void Goku::actualizarAnimacion()
             }
         }
     }
+
+    // Si está atacando, no cambiar animación de caminar/agacharse
+    if (atacando)
+        return;
 
     // Animación del sprite
     if (agachado) {

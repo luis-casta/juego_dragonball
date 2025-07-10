@@ -7,32 +7,24 @@
 #include <QBrush>
 #include <QObject>
 
-class PlataformaFlotante : public QGraphicsRectItem
+class PlataformaFlotante : public QObject, public QGraphicsRectItem
 {
+    Q_OBJECT
 public:
-    PlataformaFlotante(qreal x, qreal y, qreal amplitud, qreal frecuencia, QGraphicsItem* parent = nullptr)
-        : QGraphicsRectItem(0, 0, 80, 20, parent), posX(x), posY(y), A(amplitud), w(frecuencia), t(0)
-    {
-        setBrush(QBrush(QColor(160, 82, 45))); // Color plataforma
-        setPos(posX, posY);
+    PlataformaFlotante(qreal x, qreal y, qreal amplitud, qreal frecuencia, bool moverX, bool moverY, QGraphicsItem* parent = nullptr);
+    ~PlataformaFlotante();
 
-        timer = new QTimer();
-        QObject::connect(timer, &QTimer::timeout, [this]() { mover(); });
-        timer->start(16);
-    }
+    QPointF getPosAnterior() const { return posAnterior; }
 
-    ~PlataformaFlotante() {
-        delete timer;
-    }
-
-    void mover() {
-        t += 0.05;
-        setY(posY + A * qSin(w * t));
-    }
+public slots:
+    void mover();
 
 private:
     qreal posX, posY, A, w, t;
+    bool moverEnX;
+    bool moverEnY;
     QTimer* timer;
+    QPointF posAnterior;
 };
 
 #endif // PLATAFORMA_H
