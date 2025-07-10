@@ -13,6 +13,7 @@ SOURCES += \
     goku.cpp \
     main.cpp \
     mainwindow.cpp \
+    menuinicio.cpp \
     objetojuego.cpp \
     plataforma.cpp \
     proyectil.cpp \
@@ -23,12 +24,14 @@ HEADERS += \
     esferadragon.h \
     goku.h \
     mainwindow.h \
+    menuinicio.h \
     objetojuego.h \
     plataforma.h \
     proyectil.h \
     yamcha.h
 
 FORMS += \
+    dialog.ui \
     mainwindow.ui
 
 # Default rules for deployment.

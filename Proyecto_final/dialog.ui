@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MenuInicioDialog</class>
+ <widget class="QDialog" name="MenuInicioDialog">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1266</width>
+    <height>735</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Menú de Inicio</string>
+  </property>
+  <property name="styleSheet">
+   <string notr="true">QDialog {
+    background-image: url(:/imagenes/menu.png); /* ¡IMPORTANTE! Cambia esta ruta si tu imagen está en otro lugar */
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: cover; /* Esto escala la imagen para cubrir todo el fondo */
+}</string>
+  </property>
+  <widget class="QLabel" name="labelBienvenida">
+   <property name="geometry">
+    <rect>
+     <x>350</x>
+     <y>250</y>
+     <width>541</width>
+     <height>121</height>
+    </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">QLabel {
+    color: white;
+    font-size: 18px;
+    font-weight: bold;
+    background-color: rgba(0, 0, 0, 120); /* Fondo negro semi-transparente */
+    padding: 10px; /* Espacio alrededor del texto */
+    border-radius: 5px; /* Bordes redondeados */
+}</string>
+   </property>
+   <property name="text">
+    <string>          ¡BIENVENIDO A LA BATALLA EN EL DESIERTO!</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="btnJugar">
+   <property name="geometry">
+    <rect>
+     <x>330</x>
+     <y>500</y>
+     <width>231</width>
+     <height>41</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>JUGAR</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="btnSalir">
+   <property name="geometry">
+    <rect>
+     <x>680</x>
+     <y>498</y>
+     <width>221</width>
+     <height>41</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>SALIR</string>
+   </property>
+  </widget>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
