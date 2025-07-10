@@ -3,12 +3,12 @@
 #include <QKeyEvent>
 #include <QRandomGenerator>
 #include <QMessageBox>
+#include <QAbstractButton>
 #include "proyectil.h"
 
 MainWindow::MainWindow(QWidget *parent)
-    : QMainWindow(parent)
-    , ui(new Ui::MainWindow)
-    , nivelActual(1)
+    : QMainWindow(parent), ui(new Ui::MainWindow), esferasRestantes(0), esfera1(nullptr)
+    , esfera2(nullptr), nivelActual(1)
 {
     ui->setupUi(this);
 
@@ -53,7 +53,7 @@ MainWindow::MainWindow(QWidget *parent)
     // Inicialización de punteros
     yamcha = nullptr;
     timerAtaqueYamcha = nullptr;
-    timerMovimientoYamcha = nullptr; // Agregar esta línea
+    timerMovimientoYamcha = nullptr;
     esfera = nullptr;
 
     // Cargar el primer nivel
@@ -71,15 +71,13 @@ void MainWindow::actualizarVidas()
 
 void MainWindow::verificarColisiones()
 {
-    // Proyectiles (TODOS los tipos - CORRECCIÓN APLICADA)
+    // Colisiones con proyectiles
     for (int i = proyectiles.size() - 1; i >= 0; --i) {
         if (goku->collidesWithItem(proyectiles[i])) {
-            // AQUÍ ESTABA EL PROBLEMA: No importa el tipo, todos restan vida
             goku->perderVida();
             actualizarVidas();
             goku->setPos(50, 500);
 
-            // Eliminar proyectil
             scene->removeItem(proyectiles[i]);
             proyectiles[i]->deleteLater();
             proyectiles.removeAt(i);
@@ -94,7 +92,7 @@ void MainWindow::verificarColisiones()
         }
     }
 
-    // Colisión con Yamcha (sin cambios)
+    // Colisión con Yamcha
     if (yamcha && goku->collidesWithItem(yamcha)) {
         if (goku->x() < yamcha->x()) {
             goku->setX(yamcha->x() - goku->boundingRect().width());
@@ -103,7 +101,7 @@ void MainWindow::verificarColisiones()
         }
     }
 
-    // Esfera del dragón (sin cambios)
+    // Colisión con esfera del nivel 1
     if (esfera && goku->collidesWithItem(esfera)) {
         scene->removeItem(esfera);
         delete esfera;
@@ -114,6 +112,44 @@ void MainWindow::verificarColisiones()
 
         nivelActual = 2;
         cargarNivel(nivelActual);
+    }
+
+    // Colisión con las dos esferas restantes tras vencer a Yamcha (nivel 2)
+    if (esferasRestantes > 0) {
+        if (esfera1 && goku->collidesWithItem(esfera1)) {
+            scene->removeItem(esfera1);
+            delete esfera1;
+            esfera1 = nullptr;
+            esferasRestantes--;
+        }
+        if (esfera2 && goku->collidesWithItem(esfera2)) {
+            scene->removeItem(esfera2);
+            delete esfera2;
+            esfera2 = nullptr;
+            esferasRestantes--;
+        }
+
+        if (esferasRestantes == 0) {
+            QMessageBox msgBox;
+            msgBox.setWindowTitle("¡Felicidades!");
+            msgBox.setText("¡Felicidades! Conseguíste las esferas del dragón. Pide un deseo.");
+            msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
+            msgBox.button(QMessageBox::Yes)->setText("Volver a jugar");
+            msgBox.button(QMessageBox::No)->setText("Salir");
+
+            int ret = msgBox.exec();
+
+            if (ret == QMessageBox::Yes) {
+                // Reiniciar juego
+                nivelActual = 1;
+                goku->reiniciarVidas();
+                actualizarVidas();
+                cargarNivel(nivelActual);
+            } else {
+                // Salir del programa
+                qApp->quit();
+            }
+        }
     }
 }
 
@@ -132,6 +168,19 @@ void MainWindow::limpiarNivel()
         delete esfera;
         esfera = nullptr;
     }
+
+    // Eliminar esferas restantes nivel 2
+    if (esfera1) {
+        scene->removeItem(esfera1);
+        delete esfera1;
+        esfera1 = nullptr;
+    }
+    if (esfera2) {
+        scene->removeItem(esfera2);
+        delete esfera2;
+        esfera2 = nullptr;
+    }
+    esferasRestantes = 0;
 
     // Eliminar proyectiles
     for (int i = 0; i < proyectiles.size(); ++i) {
@@ -155,7 +204,7 @@ void MainWindow::limpiarNivel()
         timerAtaqueYamcha = nullptr;
     }
 
-    // CORRECCIÓN: Detener y eliminar el timer de movimiento de Yamcha
+    // Detener y eliminar el timer de movimiento de Yamcha
     if (timerMovimientoYamcha) {
         timerMovimientoYamcha->stop();
         delete timerMovimientoYamcha;
@@ -209,6 +258,9 @@ void MainWindow::cargarNivel(int nivel)
         yamcha = new Yamcha(650, 500);
         scene->addItem(yamcha);
 
+        // Conectar señal de muerte a slot
+        connect(yamcha, &Yamcha::yamchaDerrotado, this, &MainWindow::onYamchaDerrotado);
+
         // movimiento automático a Yamcha
         timerMovimientoYamcha = new QTimer(this);
         connect(timerMovimientoYamcha, &QTimer::timeout, this, [=](){
@@ -229,19 +281,7 @@ void MainWindow::cargarNivel(int nivel)
         });
         timerMovimientoYamcha->start(100); // Actualizar cada 100ms
 
-        // Conectar señal de Yamcha derrotado
-        connect(yamcha, &Yamcha::yamchaDerrotado, this, [=](){
-            QMessageBox::information(this, "¡Yamcha Derrotado!",
-                                     "¡Has derrotado a Yamcha!\n\n"
-                                     "Ahora debes recoger las dos esferas del dragón.");
-
-            EsferaDragon* esfera1 = new EsferaDragon(600, 450);
-            EsferaDragon* esfera2 = new EsferaDragon(650, 400);
-            scene->addItem(esfera1);
-            scene->addItem(esfera2);
-        });
-
-        // Timer para ataques automáticos de Yamcha
+        // Timer para ataques de Yamcha
         if (timerAtaqueYamcha) {
             timerAtaqueYamcha->stop();
             delete timerAtaqueYamcha;
@@ -252,7 +292,7 @@ void MainWindow::cargarNivel(int nivel)
             if (yamcha && goku) {
                 yamcha->atacarAGoku(goku);
 
-                // IMPORTANTE: Agregar los proyectiles de Yamcha a la lista
+                // los proyectiles de Yamcha a la lista
                 QList<QGraphicsItem*> items = scene->items();
                 for (QGraphicsItem* item : std::as_const(items)) {
                     Proyectil* proyectil = dynamic_cast<Proyectil*>(item);
@@ -271,6 +311,47 @@ void MainWindow::cargarNivel(int nivel)
     scene->addItem(goku);
 }
 
+void MainWindow::onYamchaDerrotado()
+{
+    // Detener y eliminar timer de ataque de Yamcha para que no siga generando proyectiles
+    if (timerAtaqueYamcha) {
+        timerAtaqueYamcha->stop();
+        delete timerAtaqueYamcha;
+        timerAtaqueYamcha = nullptr;
+    }
+
+    // Detener timer de proyectiles que caen del cielo
+    if (timerProyectiles->isActive()) {
+        timerProyectiles->stop();
+    }
+
+    // Eliminar Yamcha de la escena y liberar memoria
+    if (yamcha) {
+        scene->removeItem(yamcha);
+        delete yamcha;
+        yamcha = nullptr;
+    }
+
+    // Eliminar todos los proyectiles (de Yamcha y los que caen del cielo)
+    for (int i = proyectiles.size() - 1; i >= 0; --i) {
+        scene->removeItem(proyectiles[i]);
+        delete proyectiles[i];
+        proyectiles.removeAt(i);
+    }
+
+    // Mostrar mensaje de victoria sobre Yamcha
+    QMessageBox::information(this, "¡Yamcha Derrotado!", "Has derrotado a Yamcha. Ahora recoge las dos esferas restantes.");
+
+    // Agregar las dos esferas restantes para el nivel 2
+    esfera1 = new EsferaDragon(600, 450);
+    esfera2 = new EsferaDragon(650, 400);
+    scene->addItem(esfera1);
+    scene->addItem(esfera2);
+
+    // Inicializar contador de esferas restantes
+    esferasRestantes = 2;
+}
+
 void MainWindow::keyPressEvent(QKeyEvent* event)
 {
     switch(event->key()) {
@@ -285,6 +366,11 @@ void MainWindow::keyPressEvent(QKeyEvent* event)
         break;
     case Qt::Key_S:
         goku->agacharse();
+        break;
+    case Qt::Key_W:
+        if (yamcha) {
+            goku->atacar(yamcha);
+        }
         break;
     default:
         QMainWindow::keyPressEvent(event);

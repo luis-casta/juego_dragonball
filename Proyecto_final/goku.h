@@ -4,6 +4,7 @@
 #include <QGraphicsPixmapItem>
 #include <QObject>
 #include <QTimer>
+#include "yamcha.h"
 
 class Goku : public QObject, public QGraphicsPixmapItem
 {
@@ -19,7 +20,8 @@ public:
     void levantarse();
     int getVidas() const { return vidas; }
     void perderVida() { if (vidas > 0) vidas--; }
-    void reiniciarVidas() { vidas = 3; }
+    void reiniciarVidas() { vidas = 5; }
+    void atacar(Yamcha* yamcha);
 
 public slots:
     void actualizarAnimacion();

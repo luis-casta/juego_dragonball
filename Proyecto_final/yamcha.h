@@ -4,6 +4,7 @@
 #include <QGraphicsPixmapItem>
 #include <QObject>
 #include <QTimer>
+#include "barravida.h"
 
 struct Animacion {
     int fila;
@@ -15,7 +16,9 @@ class Yamcha : public QObject, public QGraphicsPixmapItem
 {
     Q_OBJECT
 public:
-    explicit Yamcha(qreal x, qreal y, QGraphicsItem* parent = nullptr);
+    Yamcha(qreal x, qreal y, QGraphicsItem* parent = nullptr);
+    BarraVida* barraVida;
+    int vidaMaxima;
 
     void moverIzquierda();
     void moverDerecha();
@@ -23,7 +26,6 @@ public:
     void saltar();
 
     void atacarAGoku(QGraphicsItem* goku);
-
     void recibirDanio(int cantidad);
     int getVida() const;
     void setVida(int nuevaVida);

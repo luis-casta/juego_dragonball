@@ -1,6 +1,7 @@
 #include "goku.h"
 #include <QGraphicsScene>
 #include "plataforma.h"
+#include"yamcha.h"
 
 Goku::Goku()
     : frameActual(0), anchoCuadro(61), altoCuadro(79), totalFrames(11),
@@ -32,7 +33,19 @@ void Goku::moverDerecha()
     if (!agachado)
         dx = 5;
 }
+void Goku::atacar(Yamcha* yamcha)
+{
+    if (!yamcha) return;
 
+    // Distancia horizontal para verificar si Yamcha está en rango de ataque
+    qreal distanciaX = std::abs(yamcha->x() - this->x());
+
+    const qreal rangoAtaque = 50.0;  // Ajusta según convenga
+
+    if (distanciaX <= rangoAtaque) {
+        yamcha->recibirDanio(2);  // Goku causa 1 punto de daño
+    }
+}
 void Goku::detenerMovimiento()
 {
     dx = 0;

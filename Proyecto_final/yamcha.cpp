@@ -1,7 +1,9 @@
 #include "yamcha.h"
 #include "proyectil.h"
+#include "barravida.h"  // Incluye la barra de vida
 #include <cmath>
 #include <QGraphicsScene>
+#include <QPen>
 
 const int TOTAL_FILAS = 4;
 const int TOTAL_COLUMNAS = 3;
@@ -12,6 +14,7 @@ const int SUELO_Y = 500;      // Posición Y del suelo (igual que Goku)
 Yamcha::Yamcha(qreal x, qreal y, QGraphicsItem* parent)
     : QGraphicsPixmapItem(parent),
     vida(5),
+    vidaMaxima(5),  // Vida máxima para la barra
     velocidad(2.0),
     direccion(0),
     vx(0),
@@ -30,11 +33,15 @@ Yamcha::Yamcha(qreal x, qreal y, QGraphicsItem* parent)
 
     configurarAnimaciones();
 
-    // Goku se posiciona en Y=500, así que Yamcha también
     setPos(x, SUELO_Y);
 
     setVisible(true);
     setZValue(1);
+
+    // Crear barra de vida y posicionarla encima del sprite
+    barraVida = new BarraVida(this);
+    barraVida->setPos(0, -15);
+    barraVida->actualizarVida(vida, vidaMaxima);
 
     timerMovimiento = new QTimer(this);
     connect(timerMovimiento, &QTimer::timeout, this, &Yamcha::actualizarMovimiento);
@@ -88,21 +95,18 @@ void Yamcha::actualizarMovimiento()
     if (x() < 0) setX(0);
     if (x() + 80 > 800) setX(800 - 80);
 
-    //  la misma lógica que Goku
-    qreal posicionSuelo = SUELO_Y; // Misma posición que Goku
+    qreal posicionSuelo = SUELO_Y;
 
     if (enElAire) {
         vy += 0.5; // Gravedad
         setY(y() + vy);
 
-        // Verificar si toca el suelo
         if (y() >= posicionSuelo) {
             setY(posicionSuelo);
             vy = 0;
             enElAire = false;
         }
     } else {
-        // Mantener siempre en el suelo cuando no está en el aire
         setY(posicionSuelo);
     }
 }
@@ -123,7 +127,7 @@ void Yamcha::actualizarAnimacion()
 
     } else if (enElAire) {
         int frameSalto = animacionSalto.columnaInicio + (contadorFrames / 8) %
-        (animacionSalto.columnaFin - animacionSalto.columnaInicio + 1);
+                                                            (animacionSalto.columnaFin - animacionSalto.columnaInicio + 1);
         mostrarFrame(animacionSalto.fila, frameSalto);
 
     } else if (direccion != 0) {
@@ -168,7 +172,6 @@ void Yamcha::atacarAGoku(QGraphicsItem* goku)
     iniciarAtaque();
 
     qreal velocidadProyectil = 6.0;
-    //qreal anguloElevado = 5.0;
     qreal vxProyectil = velocidadProyectil * (dx / distancia);
     qreal vyProyectil = velocidadProyectil * (dy / distancia) - 15.0;
 
@@ -179,6 +182,9 @@ void Yamcha::atacarAGoku(QGraphicsItem* goku)
 void Yamcha::recibirDanio(int cantidad)
 {
     vida -= cantidad;
+    if (vida < 0) vida = 0;
+    barraVida->actualizarVida(vida, vidaMaxima);
+
     if (vida <= 0) {
         emit yamchaDerrotado();
     }

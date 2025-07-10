@@ -32,6 +32,7 @@ protected:
 
 private slots:
     void verificarColisiones();
+    void onYamchaDerrotado();
 
 private:
     Ui::MainWindow *ui;
@@ -45,7 +46,10 @@ private:
     EsferaDragon* esfera;
     Yamcha* yamcha = nullptr;
     QTimer* timerAtaqueYamcha = nullptr;
-    QTimer* timerMovimientoYamcha = nullptr; // NUEVO: Timer para movimiento automático
+    QTimer* timerMovimientoYamcha = nullptr;
+    int esferasRestantes = 0;
+    EsferaDragon* esfera1 = nullptr;
+    EsferaDragon* esfera2 = nullptr;
 
     // Proyectiles y timer
     QList<Proyectil*> proyectiles;

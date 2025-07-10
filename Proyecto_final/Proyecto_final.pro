@@ -9,6 +9,7 @@ CONFIG += c++17
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
+    barravida.cpp \
     goku.cpp \
     main.cpp \
     mainwindow.cpp \
@@ -17,6 +18,7 @@ SOURCES += \
     yamcha.cpp
 
 HEADERS += \
+    barravida.h \
     esferadragon.h \
     goku.h \
     mainwindow.h \
