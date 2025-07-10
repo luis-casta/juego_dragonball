@@ -1,51 +1,70 @@
 #include "proyectil.h"
-#include <QtMath>
-#include <QPainter>
-#include <QRandomGenerator>
+#include <cmath>
 
-Proyectil::Proyectil(qreal x, qreal y, qreal destinoX, qreal destinoY)
-    : vx(0), vy(0), g(0.5), danio(1)
+// Constructor original (proyectiles aleatorios que caen del cielo)
+Proyectil::Proyectil(qreal origenX, qreal origenY, qreal destinoX, qreal destinoY, QGraphicsItem* parent)
+    : QGraphicsPixmapItem(parent), tipo(Aleatorio)
 {
-    // Sprite sheet: 4 columnas, 5 filas
-    QPixmap spriteSheet(":/imagenes/proyectil.png");
-    int columnas = 4;
-    int filas = 5;
-    int frameW = spriteSheet.width() / columnas;
-    int frameH = spriteSheet.height() / filas;
+    setPos(origenX, origenY);
 
-    // Elegir frame aleatorio
-    int row = QRandomGenerator::global()->bounded(filas); // fila aleatoria de 0 a 4
-    int col = 0; // siempre la primera columna
+    // Calcular velocidad hacia el destino
+    qreal dx = destinoX - origenX;
+    qreal dy = destinoY - origenY;
+    qreal distancia = sqrt(dx*dx + dy*dy);
 
-    QPixmap framePixmap;
-    if (!spriteSheet.isNull()) {
-        framePixmap = spriteSheet.copy(col * frameW, row * frameH, frameW, frameH)
-        .scaled(100, 100, Qt::KeepAspectRatio, Qt::SmoothTransformation);
-    }
-    setPixmap(framePixmap);
+    qreal velocidad = 3.0; // Velocidad para proyectiles aleatorios
+    vx = velocidad * (dx / distancia);
+    vy = velocidad * (dy / distancia);
+
+    inicializar();
+}
+
+// Constructor nuevo (proyectiles dirigidos)
+Proyectil::Proyectil(qreal x, qreal y, qreal vx_, qreal vy_, TipoProyectil tipo_, QGraphicsItem* parent)
+    : QGraphicsPixmapItem(parent), vx(vx_), vy(vy_), tipo(tipo_)
+{
     setPos(x, y);
+    inicializar();
+}
 
-    // Calcula la velocidad inicial para llegar a destinoX, destinoY
-    qreal dx = destinoX - x;
-    qreal dy = destinoY - y;
-    qreal t = qAbs(dx) / 4.0; //vel en x
-    if (t < 1) t = 1; // Evita división por cero o valores muy pequeños
+void Proyectil::inicializar()
+{
+    QPixmap spriteSheet(":/imagenes/proyectil.png"); // 500x500 px
+    int columnas = 5;
+    int filas = 5;
+    int anchoFrame = spriteSheet.width() / columnas;
+    int altoFrame = spriteSheet.height() / filas;
 
-    vx = dx / t;
-    vy = (dy + 0.5 * g * t * t) / t;
+    // Primer frame (columna 0, fila 0)
+    QPixmap frameProyectil = spriteSheet.copy(0, 0, anchoFrame, altoFrame);
+    setPixmap(frameProyectil);
 
-    QTimer* timer = new QTimer(this);
-    connect(timer, &QTimer::timeout, this, &Proyectil::mover);
+    timer = new QTimer(this);
+    connect(timer, &QTimer::timeout, this, &Proyectil::actualizar);
     timer->start(16);
 }
 
-void Proyectil::mover()
+void Proyectil::actualizar()
 {
+    if (tipo == DeYamcha) {
+        // Proyectiles de Yamcha con gravedad (parábola)
+        const qreal gravedad = 0.5;
+        vy += gravedad;
+    } else if (tipo == Aleatorio) {
+        // Proyectiles aleatorios sin gravedad (línea recta)
+        // vx y vy se mantienen constantes
+    }
+
     setPos(x() + vx, y() + vy);
-    vy += g;
 
-    // Elimina el proyectil si sale de la pantalla
-    // if (x() < 0 || x() > 820 || y() > 620) {
-    //     deleteLater();}
+    // Eliminar si sale de la pantalla
+    // if (y() > 600 || x() < 0 || x() > 800 || y() < 0) {
+    //     scene()->removeItem(this);
+    //     deleteLater();
+    // }
+}
 
+TipoProyectil Proyectil::getTipo() const
+{
+    return tipo;
 }

@@ -12,6 +12,7 @@
 #include "plataforma.h"
 #include "esferadragon.h"
 #include "proyectil.h"
+#include "yamcha.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -42,6 +43,8 @@ private:
     Goku* goku;
     QList<PlataformaFlotante*> plataformas;
     EsferaDragon* esfera;
+    Yamcha* yamcha;
+    QTimer* timerAtaqueYamcha;
 
     // Proyectiles y timer
     QList<Proyectil*> proyectiles;

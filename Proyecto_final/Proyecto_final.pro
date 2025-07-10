@@ -13,7 +13,8 @@ SOURCES += \
     main.cpp \
     mainwindow.cpp \
     objetojuego.cpp \
-    proyectil.cpp
+    proyectil.cpp \
+    yamcha.cpp
 
 HEADERS += \
     esferadragon.h \
@@ -21,7 +22,8 @@ HEADERS += \
     mainwindow.h \
     objetojuego.h \
     plataforma.h \
-    proyectil.h
+    proyectil.h \
+    yamcha.h
 
 FORMS += \
     mainwindow.ui

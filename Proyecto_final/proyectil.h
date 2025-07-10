@@ -5,30 +5,33 @@
 #include <QObject>
 #include <QTimer>
 
+enum TipoProyectil {
+    DeGoku,
+    DeYamcha,
+    Aleatorio  // Para los proyectiles que caen del cielo
+};
+
 class Proyectil : public QObject, public QGraphicsPixmapItem
 {
     Q_OBJECT
 public:
-    Proyectil(qreal x, qreal y, qreal destinoX, qreal destinoY);
+    // Constructor original (para proyectiles aleatorios que caen)
+    Proyectil(qreal origenX, qreal origenY, qreal destinoX, qreal destinoY, QGraphicsItem* parent = nullptr);
 
-    // Getters
-    qreal getVX() const { return vx; }
-    qreal getVY() const { return vy; }
-    qreal getGravedad() const { return g; }
-    int getDanio() const { return danio; }
-    //sett
-    void setVX(qreal v) { vx = v; }
-    void setVY(qreal v) { vy = v; }
-    void setGravedad(qreal gravedad) { g = gravedad; }
-    void setDanio(int d) { danio = d; }
+    // Constructor nuevo (para proyectiles dirigidos con velocidad)
+    Proyectil(qreal x, qreal y, qreal vx, qreal vy, TipoProyectil tipo, QGraphicsItem* parent = nullptr);
+
+    TipoProyectil getTipo() const;
 
 public slots:
-    void mover();
+    void actualizar();
 
 private:
     qreal vx, vy;
-    qreal g;
-    int danio;
+    TipoProyectil tipo;
+    QTimer* timer;
+
+    void inicializar();
 };
 
 #endif // PROYECTIL_H

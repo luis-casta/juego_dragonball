@@ -11,10 +11,14 @@ class Yamcha : public QObject, public QGraphicsPixmapItem
 public:
     Yamcha(qreal x, qreal y, QGraphicsItem* parent = nullptr);
 
-    // Movimiento
+    // Movimiento básico
     void moverIzquierda();
     void moverDerecha();
     void detener();
+    void saltar();
+
+    // Ataque
+    void atacarAGoku(QGraphicsItem* goku);
 
     // Vida
     void recibirDanio(int cantidad);
@@ -36,9 +40,16 @@ public slots:
     void actualizarMovimiento();
 
 private:
+    // Atributos básicos
     int vida;
     qreal velocidad;
     int direccion; // -1: izquierda, 1: derecha, 0: quieto
+
+    // Físicas
+    qreal vx, vy, ax;
+    bool enElAire;
+
+    // Timer
     QTimer* timerMovimiento;
 };
 
