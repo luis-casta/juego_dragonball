@@ -7,16 +7,15 @@
 #include <QTimer>
 #include <QLabel>
 #include <QList>
+#include <QKeyEvent>
+#include "goku.h"
+#include "plataforma.h"
+#include "esferadragon.h"
+#include "proyectil.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
 QT_END_NAMESPACE
-
-// Forward declarations
-class Goku;
-class PlataformaFlotante;
-class EsferaDragon;
-class Proyectil;
 
 class MainWindow : public QMainWindow
 {
@@ -35,26 +34,27 @@ private slots:
 
 private:
     Ui::MainWindow *ui;
-
-    // Elementos gráficos
     QGraphicsScene* scene;
     QGraphicsView* view;
     QLabel* labelVidas;
 
     // Objetos del juego
     Goku* goku;
-    PlataformaFlotante* plataforma;
-    PlataformaFlotante* plataforma2;
-    PlataformaFlotante* plataforma3;
-    PlataformaFlotante* plataforma4;
+    QList<PlataformaFlotante*> plataformas;
     EsferaDragon* esfera;
 
     // Proyectiles y timer
     QList<Proyectil*> proyectiles;
     QTimer* timerProyectiles;
 
-    // Función auxiliar
+    // Niveles
+    int nivelActual;
+
+    // Funciones auxiliares
     void actualizarVidas();
+    void iniciarSiguienteNivel();
+    void cargarNivel(int nivel);
+    void limpiarNivel();
 };
 
 #endif // MAINWINDOW_H
