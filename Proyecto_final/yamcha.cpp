@@ -7,6 +7,7 @@ const int TOTAL_FILAS = 4;
 const int TOTAL_COLUMNAS = 3;
 const int ANCHO_FRAME = 106;  // 318 / 3
 const int ALTO_FRAME = 104;   // 419 / 4
+const int SUELO_Y = 500;      // Posición Y del suelo (igual que Goku)
 
 Yamcha::Yamcha(qreal x, qreal y, QGraphicsItem* parent)
     : QGraphicsPixmapItem(parent),
@@ -21,6 +22,7 @@ Yamcha::Yamcha(qreal x, qreal y, QGraphicsItem* parent)
     contadorFrames(0),
     atacando(false)
 {
+    Q_UNUSED(y);
     spriteSheet = QPixmap(":/imagenes/yamchaa.png");
     if (spriteSheet.isNull()) {
         return;
@@ -28,8 +30,8 @@ Yamcha::Yamcha(qreal x, qreal y, QGraphicsItem* parent)
 
     configurarAnimaciones();
 
-    mostrarFrame(animacionQuieto.fila, animacionQuieto.columnaInicio);
-    setPos(x, y);
+    // Goku se posiciona en Y=500, así que Yamcha también
+    setPos(x, SUELO_Y);
 
     setVisible(true);
     setZValue(1);
@@ -62,7 +64,6 @@ void Yamcha::mostrarFrame(int fila, int columna)
 
     QPixmap frame = spriteSheet.copy(xFrame, yFrame, ANCHO_FRAME, ALTO_FRAME);
 
-    // Escalar para que se vea más grande (ajusta tamaño si quieres)
     QPixmap frameEscalado = frame.scaled(80, 80, Qt::KeepAspectRatio, Qt::SmoothTransformation);
     setPixmap(frameEscalado);
     update();
@@ -87,16 +88,22 @@ void Yamcha::actualizarMovimiento()
     if (x() < 0) setX(0);
     if (x() + 80 > 800) setX(800 - 80);
 
+    //  la misma lógica que Goku
+    qreal posicionSuelo = SUELO_Y; // Misma posición que Goku
+
     if (enElAire) {
-        vy += 0.5;
+        vy += 0.5; // Gravedad
         setY(y() + vy);
-        if (y() >= 420) {
-            setY(420);
+
+        // Verificar si toca el suelo
+        if (y() >= posicionSuelo) {
+            setY(posicionSuelo);
             vy = 0;
             enElAire = false;
         }
     } else {
-        if (y() != 420) setY(420);
+        // Mantener siempre en el suelo cuando no está en el aire
+        setY(posicionSuelo);
     }
 }
 
@@ -116,7 +123,7 @@ void Yamcha::actualizarAnimacion()
 
     } else if (enElAire) {
         int frameSalto = animacionSalto.columnaInicio + (contadorFrames / 8) %
-                                                            (animacionSalto.columnaFin - animacionSalto.columnaInicio + 1);
+        (animacionSalto.columnaFin - animacionSalto.columnaInicio + 1);
         mostrarFrame(animacionSalto.fila, frameSalto);
 
     } else if (direccion != 0) {
@@ -161,8 +168,9 @@ void Yamcha::atacarAGoku(QGraphicsItem* goku)
     iniciarAtaque();
 
     qreal velocidadProyectil = 6.0;
+    //qreal anguloElevado = 5.0;
     qreal vxProyectil = velocidadProyectil * (dx / distancia);
-    qreal vyProyectil = velocidadProyectil * (dy / distancia) - 2.0;
+    qreal vyProyectil = velocidadProyectil * (dy / distancia) - 15.0;
 
     Proyectil* proyectil = new Proyectil(this->x() + 40, this->y() + 40, vxProyectil, vyProyectil, DeYamcha);
     scene()->addItem(proyectil);

@@ -64,6 +64,8 @@ private:
     Animacion animacionCaminar;
     Animacion animacionAtaque;
     Animacion animacionSalto;
+
+    // ELIMINADO: const int offsetY = 15; // Ya no es necesario
 };
 
 #endif // YAMCHA_H
