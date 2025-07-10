@@ -44,17 +44,32 @@ private:
 
     QPixmap spriteSheet;
     int frameActual;
-    int columnas;
-    int filas;
-    int anchoFrame;
-    int altoFrame;
 
-    // Variables para animación de ataque
+    // Configuración del sprite 17x17 (64x64 cada frame)
+    static const int TOTAL_COLUMNAS = 17;
+    static const int TOTAL_FILAS = 17;
+    static const int ANCHO_FRAME = 64;
+    static const int ALTO_FRAME = 64;
+
+    // Configuración de animaciones
+    struct AnimacionConfig {
+        int fila;
+        int columnaInicio;
+        int columnaFin;
+    };
+
+    AnimacionConfig animacionQuieto;
+    AnimacionConfig animacionCaminar;
+    AnimacionConfig animacionAtaque;
+    AnimacionConfig animacionSalto;
+
+    // Estado de animación
     bool atacando;
-    int animacionAtaqueFila;
-    int animacionAtaqueInicioCol;
-    int animacionAtaqueFinCol;
     int frameActualAtaque;
+    int contadorFrames;
+
+    void configurarAnimaciones();
+    void mostrarFrame(int fila, int columna);
 };
 
 #endif // YAMCHA_H

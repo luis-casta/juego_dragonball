@@ -43,8 +43,9 @@ private:
     Goku* goku;
     QList<PlataformaFlotante*> plataformas;
     EsferaDragon* esfera;
-    Yamcha* yamcha=nullptr;
-    QTimer* timerAtaqueYamcha=nullptr;
+    Yamcha* yamcha = nullptr;
+    QTimer* timerAtaqueYamcha = nullptr;
+    QTimer* timerMovimientoYamcha = nullptr; // NUEVO: Timer para movimiento automático
 
     // Proyectiles y timer
     QList<Proyectil*> proyectiles;
