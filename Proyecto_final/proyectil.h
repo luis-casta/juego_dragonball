@@ -16,8 +16,7 @@ public:
     qreal getVY() const { return vy; }
     qreal getGravedad() const { return g; }
     int getDanio() const { return danio; }
-
-    // Setters
+    //sett
     void setVX(qreal v) { vx = v; }
     void setVY(qreal v) { vy = v; }
     void setGravedad(qreal gravedad) { g = gravedad; }
