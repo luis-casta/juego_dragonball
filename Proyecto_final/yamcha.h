@@ -5,11 +5,17 @@
 #include <QObject>
 #include <QTimer>
 
+struct Animacion {
+    int fila;
+    int columnaInicio;
+    int columnaFin;
+};
+
 class Yamcha : public QObject, public QGraphicsPixmapItem
 {
     Q_OBJECT
 public:
-    Yamcha(qreal x, qreal y, QGraphicsItem* parent = nullptr);
+    explicit Yamcha(qreal x, qreal y, QGraphicsItem* parent = nullptr);
 
     void moverIzquierda();
     void moverDerecha();
@@ -27,49 +33,37 @@ public:
 signals:
     void yamchaDerrotado();
 
-public slots:
+private slots:
     void actualizarMovimiento();
     void actualizarAnimacion();
 
 private:
+    void configurarAnimaciones();
+    void mostrarFrame(int fila, int columna);
+
     int vida;
     qreal velocidad;
     int direccion; // -1 izquierda, 1 derecha, 0 quieto
 
-    qreal vx, vy;
+    qreal vx;
+    qreal vy;
     bool enElAire;
 
     QTimer* timerMovimiento;
     QTimer* timerAnimacion;
 
     QPixmap spriteSheet;
+
     int frameActual;
-
-    // Configuración del sprite 17x17 (64x64 cada frame)
-    static const int TOTAL_COLUMNAS = 17;
-    static const int TOTAL_FILAS = 17;
-    static const int ANCHO_FRAME = 64;
-    static const int ALTO_FRAME = 64;
-
-    // Configuración de animaciones
-    struct AnimacionConfig {
-        int fila;
-        int columnaInicio;
-        int columnaFin;
-    };
-
-    AnimacionConfig animacionQuieto;
-    AnimacionConfig animacionCaminar;
-    AnimacionConfig animacionAtaque;
-    AnimacionConfig animacionSalto;
-
-    // Estado de animación
-    bool atacando;
     int frameActualAtaque;
     int contadorFrames;
 
-    void configurarAnimaciones();
-    void mostrarFrame(int fila, int columna);
+    bool atacando;
+
+    Animacion animacionQuieto;
+    Animacion animacionCaminar;
+    Animacion animacionAtaque;
+    Animacion animacionSalto;
 };
 
 #endif // YAMCHA_H

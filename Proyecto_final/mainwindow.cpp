@@ -209,7 +209,7 @@ void MainWindow::cargarNivel(int nivel)
         yamcha = new Yamcha(650, 500);
         scene->addItem(yamcha);
 
-        // CORRECCIÓN: Agregar movimiento automático a Yamcha
+        // movimiento automático a Yamcha
         timerMovimientoYamcha = new QTimer(this);
         connect(timerMovimientoYamcha, &QTimer::timeout, this, [=](){
             if (yamcha && goku) {
@@ -254,16 +254,12 @@ void MainWindow::cargarNivel(int nivel)
 
                 // IMPORTANTE: Agregar los proyectiles de Yamcha a la lista
                 QList<QGraphicsItem*> items = scene->items();
-                for (QGraphicsItem* item : items) {
+                for (QGraphicsItem* item : std::as_const(items)) {
                     Proyectil* proyectil = dynamic_cast<Proyectil*>(item);
                     if (proyectil && proyectil->getTipo() == DeYamcha) {
                         // Solo agregar si no está ya en la lista
                         if (!proyectiles.contains(proyectil)) {
-                            proyectiles.append(proyectil);
-                        }
-                    }
-                }
-            }
+                            proyectiles.append(proyectil);}}}}
         });
         timerAtaqueYamcha->start(2000);
 

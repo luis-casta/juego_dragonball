@@ -2,7 +2,11 @@
 #include "proyectil.h"
 #include <cmath>
 #include <QGraphicsScene>
-#include <QDebug>
+
+const int TOTAL_FILAS = 4;
+const int TOTAL_COLUMNAS = 3;
+const int ANCHO_FRAME = 106;  // 318 / 3
+const int ALTO_FRAME = 104;   // 419 / 4
 
 Yamcha::Yamcha(qreal x, qreal y, QGraphicsItem* parent)
     : QGraphicsPixmapItem(parent),
@@ -13,28 +17,20 @@ Yamcha::Yamcha(qreal x, qreal y, QGraphicsItem* parent)
     vy(0),
     enElAire(false),
     frameActual(0),
-    atacando(false),
     frameActualAtaque(0),
-    contadorFrames(0)
+    contadorFrames(0),
+    atacando(false)
 {
     spriteSheet = QPixmap(":/imagenes/yamchaa.png");
     if (spriteSheet.isNull()) {
-        qDebug() << "Error: No se pudo cargar el sprite yamchaa.png";
         return;
     }
 
-    qDebug() << "Sprite cargado - Ancho total:" << spriteSheet.width()
-             << "Alto total:" << spriteSheet.height()
-             << "Esperado: 1088x1088";
-
-    // Configurar las animaciones
     configurarAnimaciones();
 
-    // Mostrar el frame inicial (quieto)
     mostrarFrame(animacionQuieto.fila, animacionQuieto.columnaInicio);
     setPos(x, y);
 
-    // Hacer visible el item
     setVisible(true);
     setZValue(1);
 
@@ -49,65 +45,32 @@ Yamcha::Yamcha(qreal x, qreal y, QGraphicsItem* parent)
 
 void Yamcha::configurarAnimaciones()
 {
-    // Configurar las animaciones usando solo las primeras filas hasta la tercera columna
-
-    // Animación quieto (primera fila, primera columna)
-    animacionQuieto.fila = 0;
-    animacionQuieto.columnaInicio = 0;
-    animacionQuieto.columnaFin = 0; // Solo un frame para estar quieto
-
-    // Animación caminar (primera fila, columnas 0-2)
-    animacionCaminar.fila = 0;
-    animacionCaminar.columnaInicio = 0;
-    animacionCaminar.columnaFin = 2; // 3 frames de animación de caminar (columnas 0, 1, 2)
-
-    // Animación ataque (segunda fila, columnas 0-2)
-    animacionAtaque.fila = 1;
-    animacionAtaque.columnaInicio = 0;
-    animacionAtaque.columnaFin = 2; // 3 frames de animación de ataque
-
-    // Animación salto (tercera fila, columnas 0-2)
-    animacionSalto.fila = 2;
-    animacionSalto.columnaInicio = 0;
-    animacionSalto.columnaFin = 2; // 3 frames de animación de salto
+    animacionQuieto = {0, 0, 0};
+    animacionCaminar = {0, 0, 2};
+    animacionAtaque = {1, 0, 2};
+    animacionSalto = {2, 0, 2};
 }
 
 void Yamcha::mostrarFrame(int fila, int columna)
 {
-    // Verificar límites
     if (fila < 0 || fila >= TOTAL_FILAS || columna < 0 || columna >= TOTAL_COLUMNAS) {
-        qDebug() << "Frame fuera de límites - Fila:" << fila << "Columna:" << columna;
         return;
     }
 
     int xFrame = columna * ANCHO_FRAME;
     int yFrame = fila * ALTO_FRAME;
 
-    // Verificar que el frame está dentro del sprite
-    if (xFrame + ANCHO_FRAME <= spriteSheet.width() &&
-        yFrame + ALTO_FRAME <= spriteSheet.height()) {
+    QPixmap frame = spriteSheet.copy(xFrame, yFrame, ANCHO_FRAME, ALTO_FRAME);
 
-        QPixmap frame = spriteSheet.copy(xFrame, yFrame, ANCHO_FRAME, ALTO_FRAME);
-        setPixmap(frame);
-
-        qDebug() << "Mostrando frame - Fila:" << fila << "Columna:" << columna
-                 << "X:" << xFrame << "Y:" << yFrame;
-    } else {
-        qDebug() << "Frame fuera del sprite - X:" << xFrame << "Y:" << yFrame;
-    }
+    // Escalar para que se vea más grande (ajusta tamaño si quieres)
+    QPixmap frameEscalado = frame.scaled(80, 80, Qt::KeepAspectRatio, Qt::SmoothTransformation);
+    setPixmap(frameEscalado);
+    update();
 }
 
-void Yamcha::moverIzquierda() {
-    direccion = -1;
-}
-
-void Yamcha::moverDerecha() {
-    direccion = 1;
-}
-
-void Yamcha::detener() {
-    direccion = 0;
-}
+void Yamcha::moverIzquierda() { direccion = -1; }
+void Yamcha::moverDerecha() { direccion = 1; }
+void Yamcha::detener() { direccion = 0; }
 
 void Yamcha::actualizarMovimiento()
 {
@@ -116,29 +79,24 @@ void Yamcha::actualizarMovimiento()
         if (vx > velocidad) vx = velocidad;
         if (vx < -velocidad) vx = -velocidad;
     } else {
-        vx *= 0.8; // Fricción
+        vx *= 0.8;
     }
 
     setX(x() + vx);
 
-    // Límites de pantalla
     if (x() < 0) setX(0);
-    if (x() + ANCHO_FRAME > 800) setX(800 - ANCHO_FRAME);
+    if (x() + 80 > 800) setX(800 - 80);
 
-    // Gravedad y suelo
     if (enElAire) {
-        vy += 0.5; // Gravedad
+        vy += 0.5;
         setY(y() + vy);
-        if (y() >= 500) {
-            setY(500);
+        if (y() >= 420) {
+            setY(420);
             vy = 0;
             enElAire = false;
         }
     } else {
-        // Mantener en el suelo
-        if (y() != 500) {
-            setY(500);
-        }
+        if (y() != 420) setY(420);
     }
 }
 
@@ -147,25 +105,22 @@ void Yamcha::actualizarAnimacion()
     contadorFrames++;
 
     if (atacando) {
-        // Animación de ataque (fila 1, columnas 0-2)
-        if (contadorFrames % 4 == 0) { // Cambiar frame cada 4 ciclos para ataque más lento
+        if (contadorFrames % 6 == 0) {
             frameActualAtaque++;
             if (frameActualAtaque > animacionAtaque.columnaFin) {
                 frameActualAtaque = animacionAtaque.columnaInicio;
-                atacando = false; // Terminar ataque
+                atacando = false;
             }
         }
         mostrarFrame(animacionAtaque.fila, frameActualAtaque);
 
     } else if (enElAire) {
-        // Animación de salto (fila 2, columnas 0-2)
-        int frameSalto = animacionSalto.columnaInicio + (contadorFrames / 6) %
+        int frameSalto = animacionSalto.columnaInicio + (contadorFrames / 8) %
                                                             (animacionSalto.columnaFin - animacionSalto.columnaInicio + 1);
         mostrarFrame(animacionSalto.fila, frameSalto);
 
     } else if (direccion != 0) {
-        // Animación de caminar (fila 0, columnas 0-2)
-        if (contadorFrames % 3 == 0) { // Cambiar frame cada 3 ciclos
+        if (contadorFrames % 4 == 0) {
             frameActual++;
             if (frameActual > animacionCaminar.columnaFin) {
                 frameActual = animacionCaminar.columnaInicio;
@@ -174,9 +129,8 @@ void Yamcha::actualizarAnimacion()
         mostrarFrame(animacionCaminar.fila, frameActual);
 
     } else {
-        // Animación quieto (fila 0, columna 0)
         mostrarFrame(animacionQuieto.fila, animacionQuieto.columnaInicio);
-        frameActual = animacionCaminar.columnaInicio; // Reset para próximo movimiento
+        frameActual = animacionCaminar.columnaInicio;
     }
 }
 
@@ -206,12 +160,11 @@ void Yamcha::atacarAGoku(QGraphicsItem* goku)
 
     iniciarAtaque();
 
-    // Crear proyectil
     qreal velocidadProyectil = 6.0;
     qreal vxProyectil = velocidadProyectil * (dx / distancia);
     qreal vyProyectil = velocidadProyectil * (dy / distancia) - 2.0;
 
-    Proyectil* proyectil = new Proyectil(this->x() + 30, this->y() + 20, vxProyectil, vyProyectil, DeYamcha);
+    Proyectil* proyectil = new Proyectil(this->x() + 40, this->y() + 40, vxProyectil, vyProyectil, DeYamcha);
     scene()->addItem(proyectil);
 }
 
@@ -223,10 +176,5 @@ void Yamcha::recibirDanio(int cantidad)
     }
 }
 
-int Yamcha::getVida() const {
-    return vida;
-}
-
-void Yamcha::setVida(int nuevaVida) {
-    vida = nuevaVida;
-}
+int Yamcha::getVida() const { return vida; }
+void Yamcha::setVida(int nuevaVida) { vida = nuevaVida; }
