@@ -134,14 +134,11 @@ void Goku::actualizarAnimacion()
             if (x() + anchoCuadro > plataforma->x() &&
                 x() < plataforma->x() + plataforma->rect().width()) {
                 plataformaDebajo = plataforma;
-                break;
-            }
-        }
-    }
+                break;}}}
 
     // Manejar salto
     if (saltando) {
-        dy += 0.5; // Gravedad
+        dy += 0.6; // Gravedad
         qreal nuevaY = y() + dy;
 
         // Verificar si aterriza en el suelo

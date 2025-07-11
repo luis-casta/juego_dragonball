@@ -1,7 +1,7 @@
 #include "plataforma.h"
 
 PlataformaFlotante::PlataformaFlotante(qreal x, qreal y, qreal amplitud, qreal frecuencia, bool moverX, bool moverY, QGraphicsItem* parent)
-    : QObject(), QGraphicsRectItem(0, 0, 60, 20, parent), posX(x), posY(y), A(amplitud), w(frecuencia), t(0), moverEnX(moverX), moverEnY(moverY)
+    : QObject(), QGraphicsRectItem(0, 0, 15, 20, parent), posX(x), posY(y), A(amplitud), w(frecuencia), t(0), moverEnX(moverX), moverEnY(moverY)
 {
     setBrush(QBrush(QColor(160, 82, 45))); // Color plataforma
     setPos(posX, posY);

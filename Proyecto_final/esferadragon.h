@@ -27,28 +27,29 @@ public:
         estrella->setPos(0, 0);
 
         timer = new QTimer();
-
-        QObject::connect(timer, &QTimer::timeout,[this]() { mover(); });
-
+        // Usar conexión con contexto del timer para evitar la advertencia
+        QObject::connect(timer, &QTimer::timeout, timer, [this]() {
+            mover();
+        });
         timer->start(16);
     }
 
     ~EsferaDragon() {
         if (timer) {
             timer->stop();
+            timer->disconnect(); // Desconectar todas las señales
             delete timer;
+            timer = nullptr;
         }
     }
 
     void mover() {
-        // Movimiento vertical
         t += 0.05;
         qreal offsetY = 10 * qSin(t);
 
-        // Movimiento horizontal senoidal por toda la escena
-        tHorizontal += 0.02; // Velocidad del movimiento horizontal
-        qreal amplitudX = 350; // (800 - 100) / 2
-        qreal centroX = 400;   // Centro de la escena (800 / 2)
+        tHorizontal += 0.02;
+        qreal amplitudX = 350;
+        qreal centroX = 400;
 
         qreal nuevaX = centroX + amplitudX * qSin(tHorizontal);
         qreal nuevaY = baseY + offsetY;
@@ -63,4 +64,8 @@ private:
 };
 
 #endif // ESFERADRAGON_H
+
+
+
+
 

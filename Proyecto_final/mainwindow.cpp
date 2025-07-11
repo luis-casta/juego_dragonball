@@ -231,10 +231,10 @@ void MainWindow::cargarNivel(int nivel)
         view->setFixedSize(820, 620);
 
         // Plataformas del nivel 1
-        plataformas.append(new PlataformaFlotante(100, 400, 25, 2,false,true));
-        plataformas.append(new PlataformaFlotante(350, 300, 15, 1.5,true,false));
-        plataformas.append(new PlataformaFlotante(500, 250, 25, 1.8,true,true));// ambos ejes
-        plataformas.append(new PlataformaFlotante(650, 200, 10, 2.2,false,true));
+        plataformas.append(new PlataformaFlotante(100, 400, 35, 2,false,true));//1
+        plataformas.append(new PlataformaFlotante(300, 300, 15, 1.5,true,true));//2
+        plataformas.append(new PlataformaFlotante(500, 250, 25, 1.8,true,false));// ambos ejes
+        plataformas.append(new PlataformaFlotante(650, 200, 10, 2.2,true,true));//4
 
         for (int i = 0; i < plataformas.size(); ++i)
             scene->addItem(plataformas[i]);
