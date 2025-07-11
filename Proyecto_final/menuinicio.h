@@ -14,7 +14,7 @@ class MenuInicio : public QDialog
     Q_OBJECT
 
 public:
-    explicit MenuInicio(QWidget *parent = nullptr);
+    MenuInicio(QWidget *parent = nullptr);
     ~MenuInicio();
 
 private:
