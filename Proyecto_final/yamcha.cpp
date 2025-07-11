@@ -13,8 +13,8 @@ const int SUELO_Y = 500;      // Posición Y del suelo (igual que Goku)
 
 Yamcha::Yamcha(qreal x, qreal y, QGraphicsItem* parent)
     : QGraphicsPixmapItem(parent),
-    vida(5),
-    vidaMaxima(5),  // Vida máxima para la barra
+    vidaMaxima(5),
+    vida(5),  // Vida máxima para la barra
     velocidad(2.0),
     direccion(0),
     vx(0),

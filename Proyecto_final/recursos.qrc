@@ -2,10 +2,12 @@
     <qresource prefix="/imagenes">
         <file>escena1.png</file>
         <file>escena2.png</file>
-        <file>puar.png</file>
         <file>spritegoku.png</file>
         <file>yamchaa.png</file>
         <file>proyectil.png</file>
         <file>menu.png</file>
+        <file>fondo.mp3</file>
     </qresource>
+    <qresource prefix="/musica"/>
+    <qresource lang="español" prefix="/musica"/>
 </RCC>

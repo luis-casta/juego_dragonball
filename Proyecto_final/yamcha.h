@@ -45,7 +45,7 @@ private:
 
     int vida;
     qreal velocidad;
-    int direccion; // -1 izquierda, 1 derecha, 0 quieto
+    int direccion;
 
     qreal vx;
     qreal vy;
@@ -67,7 +67,6 @@ private:
     Animacion animacionAtaque;
     Animacion animacionSalto;
 
-    // ELIMINADO: const int offsetY = 15; // Ya no es necesario
 };
 
 #endif // YAMCHA_H
