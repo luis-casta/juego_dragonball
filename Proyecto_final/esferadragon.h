@@ -2,8 +2,8 @@
 #define ESFERADRAGON_H
 
 #include <QGraphicsEllipseItem>
-#include <QGraphicsTextItem>//para la estrella
-#include <QFont>//para la estrella
+#include <QGraphicsTextItem>
+#include <QFont>
 #include <QTimer>
 #include <QtMath>
 #include <QBrush>
@@ -14,7 +14,8 @@ class EsferaDragon : public QGraphicsEllipseItem
 {
 public:
     EsferaDragon(qreal x, qreal y, QGraphicsItem* parent = nullptr)
-        : QGraphicsEllipseItem(0, 0, 20, 20, parent), baseY(y), t(0)
+        : QGraphicsEllipseItem(0, 0, 20, 20, parent),
+        baseY(y), t(0), tHorizontal(0)
     {
         setBrush(QBrush(Qt::yellow));
         setPen(QPen(Qt::darkYellow, 2));
@@ -23,26 +24,43 @@ public:
         estrella = new QGraphicsTextItem("★", this);
         estrella->setDefaultTextColor(Qt::red);
         estrella->setFont(QFont("Arial", 10, QFont::Bold));
-        estrella->setPos(0,0); // Centrada en la esfera
+        estrella->setPos(0, 0);
 
         timer = new QTimer();
-        QObject::connect(timer, &QTimer::timeout, [this]() { flotar(); });
+
+        QObject::connect(timer, &QTimer::timeout,[this]() { mover(); });
+
         timer->start(16);
     }
 
     ~EsferaDragon() {
-        delete timer;
+        if (timer) {
+            timer->stop();
+            delete timer;
+        }
     }
 
-    void flotar() {
+    void mover() {
+        // Movimiento vertical
         t += 0.05;
-        setY(baseY + 10 * qSin(t));
+        qreal offsetY = 10 * qSin(t);
+
+        // Movimiento horizontal senoidal por toda la escena
+        tHorizontal += 0.02; // Velocidad del movimiento horizontal
+        qreal amplitudX = 350; // (800 - 100) / 2
+        qreal centroX = 400;   // Centro de la escena (800 / 2)
+
+        qreal nuevaX = centroX + amplitudX * qSin(tHorizontal);
+        qreal nuevaY = baseY + offsetY;
+
+        setPos(nuevaX, nuevaY);
     }
 
 private:
-    qreal baseY, t;
+    qreal baseY, t, tHorizontal;
     QTimer* timer;
     QGraphicsTextItem* estrella;
 };
 
 #endif // ESFERADRAGON_H
+

@@ -62,11 +62,15 @@ private:
 
     bool atacando;
 
+    // Nuevas variables para animación de daño
+    bool recibiendoDanio;
+    int tiempoAnimacionDanio;
+
     Animacion animacionQuieto;
     Animacion animacionCaminar;
     Animacion animacionAtaque;
     Animacion animacionSalto;
-
+    Animacion animacionDanio;  // Nueva animación de daño
 };
 
 #endif // YAMCHA_H

@@ -8,15 +8,15 @@ MenuInicio::MenuInicio(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    // Conectar botones
+    //  botones
     connect(ui->btnJugar, &QPushButton::clicked, this, &MenuInicio::accept);
     connect(ui->btnSalir, &QPushButton::clicked, this, &MenuInicio::reject);
 
-    // Configurar reproductor de audio
+    //  reproductor de audio
     player = new QMediaPlayer(this);
     audioOutput = new QAudioOutput(this);
 
-    // Configurar volumen y conectar audio
+    //  volumen y conectar audio
     audioOutput->setVolume(0.8); // 80% volumen
     player->setAudioOutput(audioOutput);
 

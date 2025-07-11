@@ -1,7 +1,7 @@
 #include "proyectil.h"
+#include "qgraphicsscene.h"
 #include <cmath>
-
-// Constructor original (proyectiles aleatorios que caen del cielo)
+// proyectiles aleatorios que caen del cielo
 Proyectil::Proyectil(qreal origenX, qreal origenY, qreal destinoX, qreal destinoY, QGraphicsItem* parent)
     : QGraphicsPixmapItem(parent), tipo(Aleatorio)
 {
@@ -19,7 +19,7 @@ Proyectil::Proyectil(qreal origenX, qreal origenY, qreal destinoX, qreal destino
     inicializar();
 }
 
-// Constructor nuevo (proyectiles dirigidos)
+// Constructor
 Proyectil::Proyectil(qreal x, qreal y, qreal vx_, qreal vy_, TipoProyectil tipo_, QGraphicsItem* parent)
     : QGraphicsPixmapItem(parent), vx(vx_), vy(vy_), tipo(tipo_)
 {
@@ -54,14 +54,8 @@ void Proyectil::actualizar()
         // Proyectiles aleatorios sin gravedad (línea recta)
         // vx y vy se mantienen constantes
     }
+    setPos(x() + vx, y() + vy);{}
 
-    setPos(x() + vx, y() + vy);
-
-    // Eliminar si sale de la pantalla
-    // if (y() > 600 || x() < 0 || x() > 800 || y() < 0) {
-    //     scene()->removeItem(this);
-    //     deleteLater();
-    // }
 }
 
 TipoProyectil Proyectil::getTipo() const

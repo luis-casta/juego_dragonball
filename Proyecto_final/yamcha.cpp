@@ -23,7 +23,9 @@ Yamcha::Yamcha(qreal x, qreal y, QGraphicsItem* parent)
     frameActual(0),
     frameActualAtaque(0),
     contadorFrames(0),
-    atacando(false)
+    atacando(false),
+    recibiendoDanio(false),
+    tiempoAnimacionDanio(0)
 {
     Q_UNUSED(y);
     spriteSheet = QPixmap(":/imagenes/yamchaa.png");
@@ -58,6 +60,7 @@ void Yamcha::configurarAnimaciones()
     animacionCaminar = {0, 0, 2};
     animacionAtaque = {1, 0, 2};
     animacionSalto = {2, 0, 2};
+    animacionDanio = {3, 0, 2};  // Nueva animación de daño
 }
 
 void Yamcha::mostrarFrame(int fila, int columna)
@@ -82,6 +85,11 @@ void Yamcha::detener() { direccion = 0; }
 
 void Yamcha::actualizarMovimiento()
 {
+    // No moverse si está recibiendo daño
+    if (recibiendoDanio) {
+        return;
+    }
+
     if (direccion != 0) {
         vx += direccion * 0.5;
         if (vx > velocidad) vx = velocidad;
@@ -115,6 +123,25 @@ void Yamcha::actualizarAnimacion()
 {
     contadorFrames++;
 
+    //Animación de daño
+    if (recibiendoDanio) {
+        tiempoAnimacionDanio++;
+
+        // Efecto de parpadeo/temblor
+        if (tiempoAnimacionDanio % 4 == 0) {
+            int frameDanio = animacionDanio.columnaInicio + (tiempoAnimacionDanio / 4) %
+            (animacionDanio.columnaFin - animacionDanio.columnaInicio + 1);
+            mostrarFrame(animacionDanio.fila, frameDanio);
+        }
+
+        // Terminar animación de daño después de 20 frames
+        if (tiempoAnimacionDanio >= 20) {
+            recibiendoDanio = false;
+            tiempoAnimacionDanio = 0;
+        }
+        return;
+    }
+
     if (atacando) {
         if (contadorFrames % 6 == 0) {
             frameActualAtaque++;
@@ -127,7 +154,7 @@ void Yamcha::actualizarAnimacion()
 
     } else if (enElAire) {
         int frameSalto = animacionSalto.columnaInicio + (contadorFrames / 8) %
-                                                            (animacionSalto.columnaFin - animacionSalto.columnaInicio + 1);
+         (animacionSalto.columnaFin - animacionSalto.columnaInicio + 1);
         mostrarFrame(animacionSalto.fila, frameSalto);
 
     } else if (direccion != 0) {
@@ -184,6 +211,13 @@ void Yamcha::recibirDanio(int cantidad)
     vida -= cantidad;
     if (vida < 0) vida = 0;
     barraVida->actualizarVida(vida, vidaMaxima);
+
+    //  animación de daño
+    recibiendoDanio = true;
+    tiempoAnimacionDanio = 0;
+
+    // Pequeño retroceso al recibir daño
+    vx = -2.0; // Empujar hacia atrás
 
     if (vida <= 0) {
         emit yamchaDerrotado();

@@ -75,15 +75,15 @@ void Goku::atacar(Yamcha* yamcha)
 
     // Distancia horizontal para verificar si Yamcha está en rango de ataque
     qreal distanciaX = std::abs(yamcha->x() - this->x());
-    const qreal rangoAtaque = 50.0;  // Ajusta según convenga
+    const qreal rangoAtaque = 50.0;
 
     if (distanciaX <= rangoAtaque) {
-        yamcha->recibirDanio(2);  // Goku causa 2 puntos de daño
+        yamcha->recibirDanio(2);
     }
 
     atacando = true;
     frameActualAtaque = 0;
-    timerAnimacionAtaque->start(100); // Cambiar frame cada 100 ms
+    timerAnimacionAtaque->start(100); // Cambia frame
 }
 
 void Goku::actualizarAnimacionAtaque()
@@ -93,7 +93,7 @@ void Goku::actualizarAnimacionAtaque()
 
     // La fila 2 es índice 1
     int filaAtaque = 2;
-    int numFramesAtaque = 4 ; // número de frames en la fila de ataque
+    int numFramesAtaque = 4 ; // # de frames de fila
 
     QPixmap frame = spriteSheet.copy(frameActualAtaque * anchoCuadro, filaAtaque * altoCuadro, anchoCuadro, altoCuadro);
     setPixmap(frame);
@@ -104,7 +104,7 @@ void Goku::actualizarAnimacionAtaque()
         timerAnimacionAtaque->stop();
         atacando = false;
 
-        // Volver a imagen normal (fila 2, columna 0) para caminar o idle
+        // Volver a imagen normal (fila 2, columna 0)
         frameActual = 0;
         int filaCaminar = 2;
         setPixmap(spriteSheet.copy(frameActual * anchoCuadro, filaCaminar * altoCuadro, anchoCuadro, altoCuadro));
@@ -139,7 +139,7 @@ void Goku::actualizarAnimacion()
         }
     }
 
-    // Manejar salto PRIMERO
+    // Manejar salto
     if (saltando) {
         dy += 0.5; // Gravedad
         qreal nuevaY = y() + dy;
@@ -153,7 +153,7 @@ void Goku::actualizarAnimacion()
 
         // Verificar si aterriza en plataforma
         if (plataformaDebajo && dy > 0 && nuevaY + altoCuadro >= plataformaDebajo->y()) {
-            nuevaY = plataformaDebajo->y() - altoCuadro + 2;
+            nuevaY = plataformaDebajo->y() - altoCuadro;
             saltando = false;
             dy = 0;
         }
@@ -167,10 +167,10 @@ void Goku::actualizarAnimacion()
         setY(nuevaY);
     }
     else {
-        // No está saltando - seguir plataforma o aplicar gravedad
+        //  seguir plataforma o aplicar gravedad
         if (plataformaDebajo) {
             // Seguir el movimiento de la plataforma
-            qreal nuevaY = plataformaDebajo->y() - altoCuadro + 2;
+            qreal nuevaY = plataformaDebajo->y() - altoCuadro;
             setY(nuevaY);
             dy = 0;
         } else {
@@ -181,8 +181,7 @@ void Goku::actualizarAnimacion()
             }
         }
     }
-
-    // Si está atacando, no cambiar animación de caminar/agacharse
+    //no cambia anima si esta atacando
     if (atacando)
         return;
 

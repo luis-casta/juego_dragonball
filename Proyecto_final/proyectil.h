@@ -6,10 +6,8 @@
 #include <QTimer>
 
 enum TipoProyectil {
-    DeGoku,
-    DeYamcha,
-    Aleatorio  // Para los proyectiles que caen del cielo
-};
+    DeGoku, DeYamcha, Aleatorio};// Para los proyectiles que caen del cielo
+
 
 class Proyectil : public QObject, public QGraphicsPixmapItem
 {

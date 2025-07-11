@@ -12,7 +12,6 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
 
-    // Configurar escena y vista
     scene = new QGraphicsScene(this);
     scene->setSceneRect(0, 0, 800, 600);//escen ppal
 
@@ -56,7 +55,7 @@ MainWindow::MainWindow(QWidget *parent)
     timerMovimientoYamcha = nullptr;
     esfera = nullptr;
 
-    // Cargar el primer nivel
+    //  primer nivel
     cargarNivel(nivelActual);
 }
 
@@ -232,7 +231,7 @@ void MainWindow::cargarNivel(int nivel)
         view->setFixedSize(820, 620);
 
         // Plataformas del nivel 1
-        plataformas.append(new PlataformaFlotante(100, 400, 50, 2,false,true));
+        plataformas.append(new PlataformaFlotante(100, 400, 25, 2,false,true));
         plataformas.append(new PlataformaFlotante(350, 300, 15, 1.5,true,false));
         plataformas.append(new PlataformaFlotante(500, 250, 25, 1.8,true,true));// ambos ejes
         plataformas.append(new PlataformaFlotante(650, 200, 10, 2.2,false,true));
@@ -279,10 +278,8 @@ void MainWindow::cargarNivel(int nivel)
                         yamcha->moverIzquierda();
                     }
                 } else {
-                    yamcha->detener();
-                }
-            }
-        });
+                    yamcha->detener();}}});
+
         timerMovimientoYamcha->start(100); // Actualizar cada 100ms
 
         // Timer para ataques de Yamcha
@@ -310,40 +307,39 @@ void MainWindow::cargarNivel(int nivel)
         timerProyectiles->start(1200);
     }
 
-    // Siempre agregamos a Goku
+    //  Goku
     goku->setPos(50, 500);
     scene->addItem(goku);
 }
 
 void MainWindow::onYamchaDerrotado()
 {
-    // Detener y eliminar timer de ataque de Yamcha para que no siga generando proyectiles
+
     if (timerAtaqueYamcha) {
         timerAtaqueYamcha->stop();
         delete timerAtaqueYamcha;
         timerAtaqueYamcha = nullptr;
     }
 
-    // Detener timer de proyectiles que caen del cielo
+    // para timer de proyectiles que caen del cielo
     if (timerProyectiles->isActive()) {
         timerProyectiles->stop();
     }
 
-    // Eliminar Yamcha de la escena y liberar memoria
+    // Elimina Yamcha de la escena
     if (yamcha) {
         scene->removeItem(yamcha);
         delete yamcha;
         yamcha = nullptr;
     }
 
-    // Eliminar todos los proyectiles (de Yamcha y los que caen del cielo)
+    // Elimina todos los proyectiles
     for (int i = proyectiles.size() - 1; i >= 0; --i) {
         scene->removeItem(proyectiles[i]);
         delete proyectiles[i];
         proyectiles.removeAt(i);
     }
 
-    // Mostrar mensaje de victoria sobre Yamcha
     QMessageBox::information(this, "¡Yamcha Derrotado!", "Has derrotado a Yamcha. Ahora recoge las dos esferas restantes.");
 
     // Agregar las dos esferas restantes para el nivel 2
@@ -352,7 +348,6 @@ void MainWindow::onYamchaDerrotado()
     scene->addItem(esfera1);
     scene->addItem(esfera2);
 
-    // Inicializar contador de esferas restantes
     esferasRestantes = 2;
 }
 
