@@ -1,7 +1,8 @@
 #include "proyectil.h"
 #include "qgraphicsscene.h"
 #include <cmath>
-// proyectiles aleatorios que caen del cielo
+
+// Constructor para proyectiles aleatorios que caen del cielo
 Proyectil::Proyectil(qreal origenX, qreal origenY, qreal destinoX, qreal destinoY, QGraphicsItem* parent)
     : QGraphicsPixmapItem(parent), tipo(Aleatorio)
 {
@@ -19,7 +20,7 @@ Proyectil::Proyectil(qreal origenX, qreal origenY, qreal destinoX, qreal destino
     inicializar();
 }
 
-// Constructor
+// Constructor para proyectiles dirigidos con velocidad
 Proyectil::Proyectil(qreal x, qreal y, qreal vx_, qreal vy_, TipoProyectil tipo_, QGraphicsItem* parent)
     : QGraphicsPixmapItem(parent), vx(vx_), vy(vy_), tipo(tipo_)
 {
@@ -51,11 +52,11 @@ void Proyectil::actualizar()
         const qreal gravedad = 0.5;
         vy += gravedad;
     } else if (tipo == Aleatorio) {
-        // Proyectiles aleatorios sin gravedad (línea recta)
+        // Proyectiles aleatorios sin gravedad
         // vx y vy se mantienen constantes
     }
-    setPos(x() + vx, y() + vy);{}
 
+    setPos(x() + vx, y() + vy);
 }
 
 TipoProyectil Proyectil::getTipo() const
